@@ -1,3 +1,7 @@
 th {
     text-align:right;
 }
+
+fieldset {
+    width:800px;
+}
