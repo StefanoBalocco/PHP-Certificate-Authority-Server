@@ -1,5 +1,6 @@
-th {
+th .formtitles {
     text-align:right;
+    margin-right:3px;
 }
 
 fieldset {
@@ -13,4 +14,3 @@ legend {
 .header-underline {
     border-bottom:2px solid gray;
 }
-

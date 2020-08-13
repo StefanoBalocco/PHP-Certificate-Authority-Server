@@ -104,14 +104,14 @@ function create_csr($my_cert_dn, $my_keysize, $my_passphrase, $my_device_type)
       $cert_dn[$key] = stripslashes($val);
     }
   }
-  while (list($key, $val) = each($my_cert_dn)) {
+  foreach($my_cert_dn as $key => $val){
     if (array_key_exists($key, $my_cert_dn))
       if (strlen($my_cert_dn[$key]) > 0) {
         $cert_dn[$key] = $my_cert_dn[$key];
       }
   }
   $my_csrfile = "";
-  while (list($key, $val) = each($config['blank_dn'])) {
+  foreach($config['blank_dn'] as $key => $value){
     if (isset($cert_dn[$config['convert_dn'][$key]]))
       $my_csrfile = $my_csrfile . $cert_dn[$config['convert_dn'][$key]] . ":";
     else
@@ -167,9 +167,9 @@ function create_csr($my_cert_dn, $my_keysize, $my_passphrase, $my_device_type)
   $my_details = openssl_csr_get_subject($my_csr);
   $my_public_key_details = openssl_pkey_get_details(openssl_csr_get_public_key($my_csr));
 ?>
-  <table style="width: 90%;">
+  <table style='border:1px solid black; width:600px'>
     <tr>
-      <th width=100>Common Name (eg www.golf.local)</th>
+      <th>Common Name (eg www.golf.local)</th>
       <td><?PHP print $my_details['CN']; ?></td>
     </tr>
     <tr>
@@ -214,8 +214,10 @@ function download_csr_form()
 {
   $config = $_SESSION['config'];
 ?>
-  <p>
-    <b>Download a CSR</b><br />
+  <fieldset>
+
+ 
+    <legend>Download a CSR</legend>
     <form action="index.php" method="post">
       <input type="hidden" name="menuoption" value="download_csr">
       <table style="width: 90%;">
@@ -232,7 +234,7 @@ function download_csr_form()
 */
         ?>
         <tr>
-          <td width=100>Name:
+          <th>Name </th>
           <td><select name="csr_name" rows="6">
               <option value="">--- Select a CSR
                 <?php
@@ -252,7 +254,7 @@ function download_csr_form()
           <td><input type="submit" value="Download CSR">
       </table>
     </form>
-  </p>
+    </fieldset>
 <?PHP
 }
 
@@ -401,7 +403,7 @@ function upload_csr($uploaded_file)
     print "<table  style=\"width: 90%;\">";
     print "<tr><th width=100>Certificate Details</th><td></td></tr>";
     $my_index_name = '';
-    while (list($key, $val) = each($config['blank_dn'])) {
+    foreach($config["blank_dn"] as $key => $val) {
       if (isset($cert_dn[$key])) {
         $my_csrfile = $my_csrfile . $cert_dn[$key] . ":";
         print "<tr><th>" . $config['blank_dn'][$key] . "</th><td>" . $cert_dn[$key] . "</td></tr>\n";
@@ -438,10 +440,9 @@ function view_csr_details_form()
   $config = $_SESSION['config'];
 
 ?>
-
-  <p>
-    <b>View a CSR's details</b><br>
-    <?php
+    <fieldset>
+      <legend><b>View a CSR's details</b></legend>
+      <?php
     //View an existing CSR code form. Uses some PHP code first to ensure there are some valid CSRs available.
     $valid_files = 0;
     $dh = opendir($config['req_path']) or die('Unable to open  requests path');
@@ -461,7 +462,7 @@ function view_csr_details_form()
       <form action="index.php" method="post">
 
         <input type="hidden" name="menuoption" value="view_csr_details" />
-        <table style="width: 90%;">
+        <table>
           <tr>
             <td>Name:
             <td><select name="csr_name" rows="6">
@@ -492,7 +493,8 @@ function view_csr_details_form()
     } else
       print "<b> No Valid CSRs are available to view.</b>\n";
     ?>
-  </p>
+    </fieldset>
+
 <?PHP
 }
 
@@ -603,7 +605,15 @@ function sign_csr_form($my_values = array('csr_name' => '::zz::'))
 
           <tr>
             <th class='formtitles'>Certificate Type:</th>
-            <td><input type="radio" name="device_type" value="client_cert" /> Client <input type="radio" name="device_type" value="server_cert" checked /> Server<input type="radio" name="device_type" value="msdc_cert" /> Microsoft Domain Controller<input type="radio" name="device_type" value="subca_cert" /> Sub_CA <input type="radio" name="device_type" value="8021x_client_cert" /> 802.1x Client<input type="radio" name="device_type" value="8021x_server_cert" /> 802.1x Server</td>
+            
+            <td><select name="device_type">
+              <option value="client_cert">Client</option>
+              <option value="server_cert" selected="selected">Server</option>
+              <option value="msdc_cert">Microsoft Domain Controller</option>
+              <option value="subca_cert">Sub_CA</option>
+              <option value="8021x_client_cert">802.1x Client</option>
+              <option value="8021x_server_cert">802.1x Server</option>
+            </select></td>
           </tr>
           <tr>
             <th class='formtitles'>CSR Name:</th>
