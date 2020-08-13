@@ -6,6 +6,11 @@ fieldset {
     width:800px;
 }
 
+legend {
+    color:#30A8C3;
+}
+
 .header-underline {
     border-bottom:2px solid gray;
 }
+
