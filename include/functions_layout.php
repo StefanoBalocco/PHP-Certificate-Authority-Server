@@ -16,6 +16,8 @@ print "<script type=\"text/javascript\" src=\"layout/jquery-1.6.4.min.js\"></scr
 print "<script type=\"text/javascript\" src=\"layout/jquery.droppy.js\"></script>\n";
 print "<script type='text/javascript' src='layout/jquery.contextmenu.r2.js'></script>\n";
 print "<link rel=\"stylesheet\" href=\"layout/droppy.css\" type=\"text/css\">\n";
+print "<link rel=\"stylesheet\" href=\"layout/style.css\" type=\"text/css\">\n";
+
 print "<title>".$my_title."</title>\n";
 print "</head>\n";
 display_menu();

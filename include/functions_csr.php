@@ -6,27 +6,35 @@
 function createCSR_form(){
 $config=$_SESSION['config'];
 $my_x509_parse = openssl_x509_parse(file_get_contents($config['cacert']));
+
+
 ?>
-<p>
-<b>Create a new CSR</b><br/>
-<form action="index.php" method="post">
+<fieldset>
+	<legend><b>Create a new CSR</b></legend>
+	<form action="index.php" method="post">
 <input type="hidden" name="menuoption" value="createCSR"/>
-<table  style="width: 90%;">
-<tr><th width=100>Common Name (eg www.golf.local)</th><td><input type="text" name="cert_dn[commonName]" value="ABC Widgets Certificate Authority" size="40"></td></tr>
-<tr><th>Contact Email Address</th><td><input type="text" name="cert_dn[emailAddress]" value=<?PHP if (array_key_exists('emailAddress',$my_x509_parse['subject'])) print $my_x509_parse['subject']['emailAddress']; else print '""';?> size="30"></td></tr>
-<tr><th>Organizational Unit Name</th><td><input type="text" name="cert_dn[organizationalUnitName]" value=<?PHP if (array_key_exists('OU',$my_x509_parse['subject'])) print $my_x509_parse['subject']['OU']; else print '""';?> size="30"></td></tr>
-<tr><th>Organization Name</th><td><input type="text" name="cert_dn[organizationName]" value=<?PHP if (array_key_exists('O',$my_x509_parse['subject'])) print $my_x509_parse['subject']['O']; else print '""';?> size="25"></td></tr>
-<tr><th>City</th><td><input type="text" name="cert_dn[localityName]" value=<?PHP if (array_key_exists('L',$my_x509_parse['subject'])) print $my_x509_parse['subject']['L']; else print '""';?> size="25"></td></tr>
-<tr><th>State</th><td><input type="text" name="cert_dn[stateOrProvinceName]" value=<?PHP if (array_key_exists('ST',$my_x509_parse['subject'])) print $my_x509_parse['subject']['ST']; else print '""';?>  size="25"></td></tr>
-<tr><th>Country</th><td><input type="text" name="cert_dn[countryName]" value=<?PHP if (array_key_exists('C',$my_x509_parse['subject'])) print $my_x509_parse['subject']['C']; else print '""';?>  size="2"></td></tr>
-<tr><th>Key Size</th><td><input type="radio" name="cert_dn[keySize]" value="1024" /> 1024bits <input type="radio" name="cert_dn[keySize]" value="2048bits" /> 2048bits<input type="radio" name="cert_dn[keySize]" value="4096bits" checked /> 4096bits</td></tr>
-<tr><th>Device Type</th><td><input type="radio" name="device_type" value="client_cert" /> Client <input type="radio" name="device_type" value="server_cert" checked /> Server<input type="radio" name="device_type" value="msdc_cert"/> Microsoft Domain Controller<input type="radio" name="device_type" value="subca_cert" /> Sub_CA <input type="radio" name="device_type" value="8021x_client_cert" /> 802.1x Client<input type="radio" name="device_type" value="8021x_server_cert" /> 802.1x Server</td></tr>
-<tr><th>Certificate Passphrase</th><td><input type="password" name="passphrase"/></td></tr>
-<tr><td><td><input type="submit" value="Create CSR"/>
+<table  style="width: 100%;">
+<tr><th style='text-align: right'>Common Name</th><td><input type="text" name="cert_dn[commonName]" value="ABC Widgets Certificate Authority" size="40"></td></tr>
+<tr><th style='text-align: right'>Contact Email Address</th><td><input type="text" name="cert_dn[emailAddress]" value=<?PHP if (array_key_exists('emailAddress',$my_x509_parse['subject'])) print $my_x509_parse['subject']['emailAddress']; else print '""';?> size="30"></td></tr>
+<tr><th style='text-align: right'>Organizational Unit Name</th><td><input type="text" name="cert_dn[organizationalUnitName]" value=<?PHP if (array_key_exists('OU',$my_x509_parse['subject'])) print $my_x509_parse['subject']['OU']; else print '""';?> size="30"></td></tr>
+<tr><th style='text-align: right'>Organization Name</th><td><input type="text" name="cert_dn[organizationName]" value=<?PHP if (array_key_exists('O',$my_x509_parse['subject'])) print $my_x509_parse['subject']['O']; else print '""';?> size="25"></td></tr>
+<tr><th style='text-align: right'>City</th><td><input type="text" name="cert_dn[localityName]" value=<?PHP if (array_key_exists('L',$my_x509_parse['subject'])) print $my_x509_parse['subject']['L']; else print '""';?> size="25"></td></tr>
+<tr><th style='text-align: right'>State</th><td><input type="text" name="cert_dn[stateOrProvinceName]" value=<?PHP if (array_key_exists('ST',$my_x509_parse['subject'])) print $my_x509_parse['subject']['ST']; else print '""';?>  size="25"></td></tr>
+<tr><th style='text-align: right'>Country</th><td><input type="text" name="cert_dn[countryName]" value=<?PHP if (array_key_exists('C',$my_x509_parse['subject'])) print $my_x509_parse['subject']['C']; else print '""';?>  size="2"></td></tr>
+<tr><th style='text-align: right'>Key Size</th><td><input type="radio" name="cert_dn[keySize]" value="1024" /> 1024bits <input type="radio" name="cert_dn[keySize]" value="2048bits" /> 2048bits<input type="radio" name="cert_dn[keySize]" value="4096bits" checked /> 4096bits</td></tr>
+<tr><th style='text-align: right'>Device Type</th><td><input type="radio" name="device_type" value="client_cert" /> Client <input type="radio" name="device_type" value="server_cert" checked /> Server<input type="radio" name="device_type" value="msdc_cert"/> Microsoft Domain Controller<input type="radio" name="device_type" value="subca_cert" /> Sub_CA <input type="radio" name="device_type" value="8021x_client_cert" /> 802.1x Client<input type="radio" name="device_type" value="8021x_server_cert" /> 802.1x Server</td></tr>
+<tr><th style='text-align: right'>Certificate Passphrase</th><td><input type="password" name="passphrase"/></td></tr>
+
+<tr><td>&nbsp;</td><td style='text-align: right'><input type="submit" value="Create CSR"/></td></tr>
 </table>
 </form> 
-</p>
+</fieldset>
 <?PHP
+// print("<pre>");
+// // print_r($config);
+// print("########################################");
+// print_r($_SESSION['config']);
+// print("</pre>");
 }
 
 function create_csr($my_cert_dn,$my_keysize,$my_passphrase,$my_device_type) {
@@ -73,8 +81,9 @@ print "<b>Generating new key...</b><br/>";
 print $my_keysize;
 //$my_new_config=array('config'=>$config['config'],'private_key_bits'=>$config['private_key_bits'],'x509_extensions'=>$config['x509_extensions']);
 $my_new_config=array('config'=>$config['config'],'private_key_bits'=>(int)$my_keysize);
-//print_r($my_new_config);
+
 //,'private_key_bits'=>$config['private_key_bits'],'x509_extensions'=>$config['x509_extensions']);
+
 $privkey = openssl_pkey_new($my_new_config) or die('Fatal: Error creating Certificate Key');
 print "Done<br/><br/>\n";
 
@@ -88,6 +97,12 @@ openssl_pkey_export_to_file($privkey, $client_keyFile, $my_passphrase) or die ('
 print "Done<br/><br/>\n";
 
 print "<b>Creating CSR...</b><br/>";
+// print("<pre>");
+// print_r($my_new_config["config"]);
+// print("</pre>");
+// print("<pre>");
+// print_r($cert_dn);
+// print("</pre>");
 $my_csr = openssl_csr_new($cert_dn, $privkey,$config) or die('Fatal: Error creating CSR');
 print "Done<br/><br/>\n";
 
@@ -107,6 +122,7 @@ $my_public_key_details=openssl_pkey_get_details(openssl_csr_get_public_key($my_c
 <tr><th>State</th><td><?PHP print $my_details['ST'];?></td></tr>
 <tr><th>Country</th><td><?PHP print $my_details['C'];?></td></tr>
 <tr><th>Key Size</th><td><?PHP print $my_public_key_details['bits'];?></td></tr>
+
 </table>
 <?PHP
 print "<h1>Client CSR and Key - Generated successfully</h1>";
@@ -185,7 +201,7 @@ if (file_exists($download_certfile)) {
 else {
   printHeader("Certificate Retrieval");
   print "<h1> $filename - X509 CA certificate not found</h1>\n";
-  printFooter();
+  printFooter(FALSE);
   }
 }
 
@@ -327,6 +343,7 @@ else
 
 function view_csr_details_form(){
 $config=$_SESSION['config'];
+
 ?>
 
 <p>
@@ -336,6 +353,7 @@ $config=$_SESSION['config'];
 $valid_files=0;
 $dh = opendir($config['req_path']) or die('Unable to open  requests path');
 while (($file = readdir($dh)) !== false) {
+
 	if ( ($file !== ".htaccess") && is_file($config['req_path'].$file) )  {
 	  if (!is_file($config['cert_path'].$file) ) {
 	    $valid_files++;
@@ -345,14 +363,18 @@ while (($file = readdir($dh)) !== false) {
 closedir($dh);
 
 if ($valid_files) {
+
 ?>
 <form action="index.php" method="post">
+
 <input type="hidden" name="menuoption" value="view_csr_details"/>
 <table  style="width: 90%;">
 <tr><td>Name:<td><select name="csr_name" rows="6">
 <option value="">--- Select a CSR
 <?php
+
 $dh = opendir($config['req_path']) or die('Unable to open  requests path');
+
 while (($file = readdir($dh)) !== false) {
 	if ( ($file !== ".htaccess") && is_file($config['req_path'].$file) )  {
 	  if (!is_file($config['cert_path'].$file) ) {
@@ -385,30 +407,35 @@ $ext = substr($my_csrfile, strrpos($my_csrfile,'.'));
 $my_base64_csrfile=$name.$ext;
 ?>
 <h1>Viewing certificate request</h1>
-
+<input type='button' class='button' style='margin-left: 100px;' onclick="window.location='index.php?menuoption=view_csr_details_form'" value="Back"><br>
 <?php
 print "<b>Loading CSR from file...</b><br/>";
 $fp = fopen($config['req_path'].$my_base64_csrfile, "r") or die('Fatal: Error opening CSR file '.$my_base64_csrfile);
 $my_csr = fread($fp, filesize($config['req_path'].$my_base64_csrfile)) or die('Fatal: Error reading CSR file '.$my_base64_csrfile);
 fclose($fp) or die('Fatal: Error closing CSR file '.$my_base64_csrfile);
 print "Done<br/><br/>\n";
+//removing html formatting
+print("<pre>");
 print $my_csr;
+print("</pre>");
 print "<BR><BR><BR>\n\n\n";
 $my_details=openssl_csr_get_subject($my_csr);
 $my_public_key_details=openssl_pkey_get_details(openssl_csr_get_public_key($my_csr));
 ?>
-<table  style="width: 90%;">
-<tr><th width=100>Common Name (eg www.golf.local)</th><td><?PHP print $my_details['CN'];?></td></tr>
-<tr><th>Contact Email Address</th><td><?PHP print $my_details['emailAddress'];?></td></tr>
-<tr><th>Organizational Unit Name</th><td><?PHP print $my_details['OU'];?></td></tr>
-<tr><th>Organization Name</th><td><?PHP print $my_details['O'];?></td></tr>
-<tr><th>City</th><td><?PHP print $my_details['L'];?></td></tr>
-<tr><th>State</th><td><?PHP print $my_details['ST'];?></td></tr>
-<tr><th>Country</th><td><?PHP print $my_details['C'];?></td></tr>
-<tr><th>Key Size</th><td><?PHP print $my_public_key_details['bits'];?></td></tr>
+<table style='border:1px solid #000000; padding: 10px' class='boxbg'>
+<tr><th class='formtitles'>Common Name (eg www.golf.local)</th><td><?PHP print $my_details['CN'];?></td></tr>
+<tr><th class='formtitles'>Contact Email Address</th><td><?PHP print $my_details['emailAddress'];?></td></tr>
+<tr><th class='formtitles'>Organizational Unit Name</th><td><?PHP print $my_details['OU'];?></td></tr>
+<tr><th class='formtitles'>Organization Name</th><td><?PHP print $my_details['O'];?></td></tr>
+<tr><th class='formtitles'>City</th><td><?PHP print $my_details['L'];?></td></tr>
+<tr><th class='formtitles'>State</th><td><?PHP print $my_details['ST'];?></td></tr>
+<tr><th class='formtitles'>Country</th><td><?PHP print $my_details['C'];?></td></tr>
+<tr><th class='formtitles'>Key Size</th><td><?PHP print $my_public_key_details['bits'];?></td></tr>
 </table>
+<br>
+<input type='button' class='button' style='margin-left: 100px;' onclick="window.location='index.php?menuoption=view_csr_details_form'" value="Back">
 <?PHP
-print "\n\n<br><br><b>Completed.</b><br/>";
+
 }
 
 
@@ -420,12 +447,13 @@ print "\n\n<br><br><b>Completed.</b><br/>";
 function sign_csr_form($my_values=array('csr_name'=>'::zz::')){
 $config=$_SESSION['config'];
 ?>
-<p>
-<b>Sign a CSR - Generate a Certificate</b><br>
-<?php
+<fieldset>
+	<legend><b>Sign a CSR - Generate a Certificate</b></legend>
+	<?php
 //Sign an existing CSR code form. Uses some PHP code first to ensure there are some valid CSRs available.
 $valid_files=0;
 $dh = opendir($config['req_path']) or die('Unable to open  requests path');
+// echo $config['cert_path'];
 while (($file = readdir($dh)) !== false) {
 	if ( ($file !== ".htaccess") && is_file($config['req_path'].$file) )  {
 	  $name = base64_decode(substr($file, 0,strrpos($file,'.')));
@@ -441,12 +469,15 @@ if ($valid_files) {
 ?>
 <form action="index.php" method="post">
 <input type="hidden" name="menuoption" value="sign_csr"/>
-<table  style="width: 90%;">
-<tr><td width=100>CA Passphrase:<td><input type="password" name="pass"/>
-<tr><td width=100>Number of days Certificate is to be valid for:<td><input type="text" name="days" value="730"/>
-<tr><th>Device Type</th><td><input type="radio" name="device_type" value="client_cert" /> Client <input type="radio" name="device_type" value="server_cert" checked /> Server<input type="radio" name="device_type" value="msdc_cert"/> Microsoft Domain Controller<input type="radio" name="device_type" value="subca_cert" /> Sub_CA <input type="radio" name="device_type" value="8021x_client_cert" /> 802.1x Client<input type="radio" name="device_type" value="8021x_server_cert" /> 802.1x Server</td></tr>
-<tr><td>Name:<td><select name="csr_name" rows="6">
-<option value="">--- Select a CSR
+<table >
+<tr><th class='formtitles'>CA Passphrase:</th><td><input type="password" name="pass"/></td>
+<tr><th class='formtitles'>Expiration:</th><td><input type="text" name="days" value="730"/>
+<small style='color:red; font-style:italic;'>Number of days Certificate is to be valid for:</small></td>
+
+<tr><th class='formtitles'>Certificate Type:</th><td><input type="radio" name="device_type" value="client_cert" /> Client <input type="radio" name="device_type" value="server_cert" checked /> Server<input type="radio" name="device_type" value="msdc_cert"/> Microsoft Domain Controller<input type="radio" name="device_type" value="subca_cert" /> Sub_CA <input type="radio" name="device_type" value="8021x_client_cert" /> 802.1x Client<input type="radio" name="device_type" value="8021x_server_cert" /> 802.1x Server</td></tr>
+<tr><th class='formtitles'>CSR Name:</th>
+	<td><select name="csr_name" rows="6">
+<option value="">--- Select a CSR ---</option>
 <?php
 
 $dh = opendir($config['req_path']) or die('Unable to open  requests path');
@@ -463,9 +494,12 @@ while (($file = readdir($dh)) !== false) {
 closedir($dh);
 ?>
 </select></td></tr>
-<tr><td><td><input type="submit" value="Sign CSR">
+<tr><td>&nbsp;</td><td class="formtitles"><input class="button" type="submit" value="Sign CSR"></td>
 </table>
 </form>
+<p>
+<br>
+
 <?php
 }
 else 
@@ -474,7 +508,10 @@ else
 </p>
 <?PHP
 }
+?>
+</fieldset>
 
+<?PHP
 
 function sign_csr($passPhrase,$my_csrfile,$my_days,$my_device_type) {
 $config=$_SESSION['config'];

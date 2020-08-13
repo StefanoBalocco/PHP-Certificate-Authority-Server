@@ -1,6 +1,6 @@
 <?PHP
 function update_config() {
-$config['certstore_path']="NOT_DEFINED";
+$config['certstore_path']="certstore";
 if (isset($_SESSION['config']) and isset($_SESSION['my_ca']) )
   $config['ca_path'] = $config['certstore_path'].$_SESSION['my_ca']."/";
 else

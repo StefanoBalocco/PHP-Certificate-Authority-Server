@@ -5,6 +5,8 @@ function switch_ca_form()
   $config = update_config();
   $dh = opendir($config['certstore_path']) or die('Fatal: Unable to opendir Certificate Store.');
 ?>
+<!-- adding spacer -->
+<div>&nbsp;</div>
   <fieldset>
     <legend><b>Switch to a different CA<br \></legend>
     If you wish to create a new Sub-CA please select create CSR and select device type as Sub_CA.
@@ -117,16 +119,16 @@ function create_ca_form()
 {
   $_SESSION['my_ca'] = 'create_ca';
   ?>
-    <p>
-      <b>Create a new Root Certificate Authority</b><br />
+    <fieldset>
+      <legend><b>Create a new Root Certificate Authority</b></legend>
       <form action="index.php" method="post">
         <input type="hidden" name="create_ca" value="create_ca" />
         <input type="hidden" name="menuoption" value="create_ca" />
         <input type="hidden" name="device_type" value="ca_cert" />
 
-        <table style="width: 400px;">
+        <table style="width: 600px;">
           <tr>
-            <th width=100>Common Name (eg root-ca.golf.local)</th>
+            <th >Common Name (eg root-ca.golf.local)</th>
             <td><input type="text" name="cert_dn[commonName]" value="ABC Widgets Certificate Authority" size="40"></td>
           </tr>
           <tr>
@@ -170,7 +172,8 @@ function create_ca_form()
             <td><input type="submit" value="Create Root CA" />
         </table>
       </form>
-    </p>
+    </fieldset>
+
 
     <?PHP
   }
