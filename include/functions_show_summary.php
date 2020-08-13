@@ -120,15 +120,16 @@ print "<div class='contextMenu' id='all_menu'>
         <li id='download_pkey'>Download Private Key</li>
       </ul>
     </div>\n";
-print "<TABLE width=100% border=1>\n";
-print '<TR><TH>Common Name</TH><TH>Email Address</TH>';
-print "<TH>Organisational unit</TH><TH>Organisation</TH><TH>Location</TH><TH>State</TH><TH>Country</TH>\n";
+print "<TABLE style='border:1px solid black'>\n";
+print "<TR><TH class='header-underline'>Common Name</TH><TH class='header-underline'>Email Address</TH>";
+print "<TH class='header-underline'>Organisational unit</TH><TH class='header-underline'>Organisation</TH>";
+print "<TH class='header-underline'>Location</TH><TH class='header-underline'>State</TH><TH class='header-underline'>Country</TH>\n";
 $this_coloured_width="5%";
-print "<TH width=".$this_coloured_width." style=\"background-color:".$my_grey_title."\">Status</TH>";
-print "<TH width=".$this_coloured_width." style=\"background-color:".$my_grey_title."\">Has<BR>CSR</TH>";
-print "<TH width=".$this_coloured_width." style=\"background-color:".$my_grey_title."\">Has<BR>Certificate</TH>";
-print "<TH width=".$this_coloured_width." style=\"background-color:".$my_grey_title."\">Has<BR>PKCS12</TH>";
-print "<TH width=".$this_coloured_width." style=\"background-color:".$my_grey_title."\">Has<BR>Private Key</TH>";
+print "<TH width=".$this_coloured_width." style=\"background-color:".$my_grey_title.";\" class='header-underline'>Status</TH>";
+print "<TH width=".$this_coloured_width." style=\"background-color:".$my_grey_title.";\" class='header-underline'>CSR</TH>";
+print "<TH width=".$this_coloured_width." style=\"background-color:".$my_grey_title.";\" class='header-underline'>Certificate</TH>";
+print "<TH width=".$this_coloured_width." style=\"background-color:".$my_grey_title.";\" class='header-underline'>PKCS12</TH>";
+print "<TH width=".$this_coloured_width." style=\"background-color:".$my_grey_title.";\" class='header-underline'>Private Key</TH>";
 print "</TR>\n";
 $template_html = "";
 foreach ($status_array as $filename=>$this_array) {
