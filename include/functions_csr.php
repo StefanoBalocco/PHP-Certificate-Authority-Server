@@ -51,20 +51,26 @@ function createCSR_form()
         </tr>
         <tr>
           <th style='text-align: right'>Key Size</th>
-          <td><input type="radio" name="cert_dn[keySize]" value="1024" /> 1024bits <input type="radio" name="cert_dn[keySize]" value="2048bits" checked/> 2048bits<input type="radio" name="cert_dn[keySize]" value="4096bits"  /> 4096bits</td>
+          <td><select name="cert_dn[keySize]">
+              <option value="1024">1024bits</option>
+              <option value="2048bits" selected>2048bits</option>
+              <option value="4096bits">4096bits</option>
+            </select>
+
+          </td>
         </tr>
         <tr>
           <th style='text-align: right'>Device Type</th>
           <td>
-          <select name="device_type">
-            <option value="client_cert">Client</option>
-            <option value="server_cert" selected="selected">Server</option>
-            <option value="msdc_cert">Microsoft Domain Controller</option>
-            <option value="subca_cert">Sub_CA</option>
-            <option value="8021x_client_cert">802.1x Client</option>
-            <option value="8021x_server_cert">802.1x Server</option>
-          </select>  
-           </td>
+            <select name="device_type">
+              <option value="client_cert">Client</option>
+              <option value="server_cert" selected="selected">Server</option>
+              <option value="msdc_cert">Microsoft Domain Controller</option>
+              <option value="subca_cert">Sub_CA</option>
+              <option value="8021x_client_cert">802.1x Client</option>
+              <option value="8021x_server_cert">802.1x Server</option>
+            </select>
+          </td>
         </tr>
         <tr>
           <th style='text-align: right'>Certificate Passphrase</th>
