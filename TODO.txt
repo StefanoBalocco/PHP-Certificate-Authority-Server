@@ -1,1 +1,5 @@
+1) update code
+2) update certificates to include subjectAltName
+
+
 Possibly sort out the framework for RADIUS Authentication, but not worried about it at the moment
