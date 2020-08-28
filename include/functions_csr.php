@@ -17,7 +17,11 @@ function createCSR_form()
       <table style="width: 100%;">
         <tr>
           <th style='text-align: right'>Common Name</th>
-          <td><input type="text" name="cert_dn[commonName]" value="ABC Widgets Certificate Authority" size="40"></td>
+          <td><input type="text" name="cert_dn[commonName]" value="www.example.com" size="40"></td>
+        </tr>
+        <tr>
+        <th style='text-align: right'>Alternative Names (SAN)</th>
+        <td><small><i>Please enter one per line</i></small><br><textarea rows=4 cols=37 name='san' id='san'></textarea></td>
         </tr>
         <tr>
           <th style='text-align: right'>Contact Email Address</th>
@@ -69,6 +73,7 @@ function createCSR_form()
               <option value="subca_cert">Sub_CA</option>
               <option value="8021x_client_cert">802.1x Client</option>
               <option value="8021x_server_cert">802.1x Server</option>
+
             </select>
           </td>
         </tr>
@@ -85,11 +90,11 @@ function createCSR_form()
     </form>
   </fieldset>
 <?PHP
-  // print("<pre>");
-  // // print_r($config);
-  // print("########################################");
-  // print_r($_SESSION['config']);
-  // print("</pre>");
+  print("<pre>");
+  // print_r($config);
+  print("########################################");
+  print_r($_SESSION['config']);
+  print("</pre>");
 }
 
 function create_csr($my_cert_dn, $my_keysize, $my_passphrase, $my_device_type)
@@ -99,11 +104,12 @@ function create_csr($my_cert_dn, $my_keysize, $my_passphrase, $my_device_type)
 
   print "<h1>Creating Certificate Key</h1>";
   print "PASSWORD:" . $my_passphrase . "<BR>";
-  if (get_magic_quotes_gpc()) {
-    while (list($key, $val) = each($cert_dn)) {
-      $cert_dn[$key] = stripslashes($val);
-    }
-  }
+  // removing deprecated code
+  // if (get_magic_quotes_gpc()) {
+  //   foreach($cert_dn as $key => $val){
+  //     $cert_dn[$key] = stripslashes($val);
+  //   }
+  // }
   foreach($my_cert_dn as $key => $val){
     if (array_key_exists($key, $my_cert_dn))
       if (strlen($my_cert_dn[$key]) > 0) {
@@ -667,14 +673,22 @@ function sign_csr_form($my_values = array('csr_name' => '::zz::'))
     <h1>Signing certificate request</h1>
 
     <p>
-      <?PHP print "We will sign the requested CSR with this CA's key."; ?>
+    <div id="status_banner"></div>
+    <script>
+      write_to_banner("status_banner", "We will sign the requested CSR with this CA's key.");
+    </script>
+     
     </p>
 
     <p>
       Now signing certificate... Please wait...
     </p>
-    <?php
-    print "<b>Loading CA key...</b><br/>";
+  
+    
+    <script>
+      write_to_banner("status_banner", "Loading CA Key...");
+    </script>
+    <?PHP
     $fp = fopen($config['cakey'], "r") or die('Fatal: Error opening CA Key' . $config['cakey']);
     $my_key = fread($fp, filesize($config['cakey'])) or die('Fatal: Error reading CA Key' . $config['cakey']);
     fclose($fp) or die('Fatal: Error closing CA Key' . $config['cakey']);
