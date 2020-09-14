@@ -90,26 +90,43 @@ function createCSR_form()
     </form>
   </fieldset>
 <?PHP
-  print("<pre>");
-  // print_r($config);
-  print("########################################");
-  print_r($_SESSION['config']);
-  print("</pre>");
+
 }
 
 function create_csr($my_cert_dn, $my_keysize, $my_passphrase, $my_device_type)
 {
+
   $config = $_SESSION['config'];
+  // update the conf
+  print("Updating config");
+  // print($config['ca_path']);
+  $template = $_SERVER['CONTEXT_DOCUMENT_ROOT'] . "/include/openssl.conf";
+  $f = file_get_contents($template);
+  $configfile = $config['config'];
+  $san_list = explode("\n", trim($_POST['san']));
+
+$san_list_formated = "";
+$san_list_formated = "\n\n\n[subject_alt_names]\n";
+if (strlen($san_list[0]) >= 3){
+  for($i=0; $i<count($san_list); $i++){
+    $index = $i + 1;
+    $san_list_formated .= 'DNS.' . $index . " = " . $san_list[$i] . "\n";
+  }
+} else {
+  $san_list_formated .= "DNS.1 = " . $_POST['cert_dn']['commonName'] . "\n";
+  
+}
+
+$newconfig = trim($f . $san_list_formated);
+  // echo $configfile;
+  file_put_contents($configfile, $newconfig);
+
+
   $cert_dn = array();
 
   print "<h1>Creating Certificate Key</h1>";
   print "PASSWORD:" . $my_passphrase . "<BR>";
-  // removing deprecated code
-  // if (get_magic_quotes_gpc()) {
-  //   foreach($cert_dn as $key => $val){
-  //     $cert_dn[$key] = stripslashes($val);
-  //   }
-  // }
+
   foreach($my_cert_dn as $key => $val){
     if (array_key_exists($key, $my_cert_dn))
       if (strlen($my_cert_dn[$key]) > 0) {
@@ -145,6 +162,8 @@ function create_csr($my_cert_dn, $my_keysize, $my_passphrase, $my_device_type)
 
   //,'private_key_bits'=>$config['private_key_bits'],'x509_extensions'=>$config['x509_extensions']);
 
+  
+
   $privkey = openssl_pkey_new($my_new_config) or die('Fatal: Error creating Certificate Key');
   print "Done<br/><br/>\n";
 
@@ -154,16 +173,17 @@ function create_csr($my_cert_dn, $my_keysize, $my_passphrase, $my_device_type)
     print "<b>Exporting encoded private key to file...</b><br/>";
   }
   openssl_pkey_export_to_file($privkey, $client_keyFile, $my_passphrase) or die('Fatal: Error exporting Certificate Key to file');
+
+
   print "Done<br/><br/>\n";
 
   print "<b>Creating CSR...</b><br/>";
-  // print("<pre>");
-  // print_r($my_new_config["config"]);
-  // print("</pre>");
-  // print("<pre>");
-  // print_r($cert_dn);
-  // print("</pre>");
-  $my_csr = openssl_csr_new($cert_dn, $privkey, $config) or die('Fatal: Error creating CSR');
+
+//add SAN to config array
+
+
+   $my_csr = openssl_csr_new($cert_dn, $privkey, $config) or die('Fatal: Error creating CSR');
+    //openssl req -new -sha256 -key example_com.key -out example_com.csr -config C:\WampDeveloper\Config\Apache\openssl.cnf
   print "Done<br/><br/>\n";
 
   print "<b>Exporting CSR to file...</b><br/>";
@@ -206,7 +226,7 @@ function create_csr($my_cert_dn, $my_keysize, $my_passphrase, $my_device_type)
       <th>Key Size</th>
       <td><?PHP print $my_public_key_details['bits']; ?></td>
     </tr>
-
+  
   </table>
 <?PHP
   print "<h1>Client CSR and Key - Generated successfully</h1>";
