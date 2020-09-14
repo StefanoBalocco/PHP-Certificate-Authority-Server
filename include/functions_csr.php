@@ -426,6 +426,7 @@ function upload_csr($uploaded_file)
     print "<table  style=\"width: 90%;\">";
     print "<tr><th width=100>Certificate Details</th><td></td></tr>";
     $my_index_name = '';
+    $my_csrfile = "";
     foreach($config["blank_dn"] as $key => $val) {
       if (isset($cert_dn[$key])) {
         $my_csrfile = $my_csrfile . $cert_dn[$key] . ":";
