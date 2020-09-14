@@ -129,31 +129,31 @@ function create_ca_form()
         <table style="width: 600px;">
           <tr>
             <th >Common Name (eg root-ca.golf.local)</th>
-            <td><input type="text" name="cert_dn[commonName]" value="ABC Widgets Certificate Authority" size="40"></td>
+            <td><input type="text" name="cert_dn[commonName]" value="root.example.com" size="40"></td>
           </tr>
           <tr>
             <th>Contact Email Address</th>
-            <td><input type="text" name="cert_dn[emailAddress]" value="cert@abcwidgets.com" size="30"></td>
+            <td><input type="text" name="cert_dn[emailAddress]" value="cert@example.com" size="30"></td>
           </tr>
           <tr>
             <th>Organizational Unit Name</th>
-            <td><input type="text" name="cert_dn[organizationalUnitName]" value="Certification" size="30"></td>
+            <td><input type="text" name="cert_dn[organizationalUnitName]" value="Device Cert Auth" size="30"></td>
           </tr>
           <tr>
             <th>Organization Name</th>
-            <td><input type="text" name="cert_dn[organizationName]" value="ABC Widgets" size="25"></td>
+            <td><input type="text" name="cert_dn[organizationName]" value="Example.com Device Authority" size="25"></td>
           </tr>
           <tr>
             <th>City</th>
-            <td><input type="text" name="cert_dn[localityName]" value="Beverly Hills" size="25"></td>
+            <td><input type="text" name="cert_dn[localityName]" value="New Orleans" size="25"></td>
           </tr>
           <tr>
             <th>State</th>
-            <td><input type="text" name="cert_dn[stateOrProvinceName]" value="California" size="25"></td>
+            <td><input type="text" name="cert_dn[stateOrProvinceName]" value="Louisiana" size="25"></td>
           </tr>
           <tr>
             <th>Country</th>
-            <td><input type="text" name="cert_dn[countryName]" value="US" size="2"></td>
+            <td><input type="text" name="cert_dn[countryName]" value="US" size="3"></td>
           </tr>
           <tr>
             <th>Key Size</th>

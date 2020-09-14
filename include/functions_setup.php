@@ -60,6 +60,10 @@ $config=update_config();
 print "Creating Directories...\n<br>";
 if (!is_dir($config['ca_path']))
   mkdir($config['ca_path'],0700,true) or die('Fatal: Unable to create CA folder');
+
+if (!is_dir($config['config_dir']))
+  mkdir($config['config_dir'],0700,true) or die('Fatal: Unable to create Config DIR');
+
 if (!is_dir($config['req_path']))
   mkdir($config['req_path'],0700,true) or die('Fatal: Unable to create REQ folder');
 if (!is_dir($config['key_path']))
@@ -115,5 +119,65 @@ else
     define("INCLUDE_DIR", "/include");
 }
 */
+
+function create_conf($san_list,$configfile){
+  $config = $_SESSION['config'];
+  $openssl_conf_array = parse_ini_file($config['config'], true);
+$newconfig = "";
+  foreach($openssl_conf_array as $key => $val){
+    
+      
+      if($key == " v3_req "){
+          //if sub alt names then add line
+          $newconfig .= "[$key]" . "\n";
+          if(strlen($san_list[0]) >= 3){
+              foreach($val as $key2 => $val2){
+                $newconfig .= $key2 . " = " . $val2 . "\n";
+              }
+              $newconfig .= "subjectAltName = @subject_alt_names";
+              $newconfig .= "\n";
+
+              $newconfig .= "\n\n[subject_alt_names]\n";
+              $san_list_formated = "";
+              for($i=0; $i<count($san_list); $i++){
+                  $index = $i + 1;
+                  $san_list_formated .= 'DNS.' . $index . " = " . $san_list[$i] . "\n";
+                  
+                }
+                $newconfig .= $san_list_formated;
+          } else {
+              foreach($val as $key2 => $val2){
+                $newconfig .= $key2 . " = " . $val2 . "\n";
+              }
+              $newconfig .= "\n";
+          }
+        
+        
+        }elseif($key == " req_ext "){
+            if(strlen($san_list[0]) >= 3){
+              $newconfig .= "\n[ req_ext ] \n";
+              $newconfig .= "subjectAltName          = @subject_alt_names\n";
+            }      
+      } else {
+        $newconfig .= "[$key]" . "\n";
+          foreach($val as $key2 => $val2){
+            if($key2 == "nsComment"){
+              $newconfig .= $key2 . " = " . $_SESSION['my_ca'] . " " . $val2 . "\n";
+            }elseif($key2 == "subjectAltName" && $val2 == "@subject_alt_names" && strlen($san_list[0]) < 3){
+              $newconfig .= $key2 . " = email:copy";
+            } else {
+              $newconfig .= $key2 . " = " . $val2 . "\n";
+            }
+            
+          }
+      }
+      
+      $newconfig .= "\n";
+  }
+
+//write new config
+// print($newconfig);
+file_put_contents($configfile, $newconfig);
+}
 
 ?>

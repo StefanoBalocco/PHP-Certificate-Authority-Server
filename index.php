@@ -2,9 +2,11 @@
 if (session_id() === '') {
     session_start();
 }
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+
 include("./include/settings.php");
 include("./include/functions_setup.php");
 include("./include/functions_layout.php");
@@ -79,7 +81,9 @@ if (isset($page_variables['cert_dn']['keySize'])) {
 // =================================================================================================================================================================
 
 $_SESSION['config']=$config;
-
+// print("<pre>");
+// print_r($_SESSION['config']);
+// print("</pre>");
 switch ($menuoption) {
     case "menu":
         printHeader('CA Administration');

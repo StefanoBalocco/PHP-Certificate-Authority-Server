@@ -14,7 +14,8 @@ function createCSR_form()
     <legend><b>Create a new CSR</b></legend>
     <form action="index.php" method="post">
       <input type="hidden" name="menuoption" value="createCSR" />
-      <table style="width: 100%;">
+ 
+        <table style="width: 100%;">
         <tr>
           <th style='text-align: right'>Common Name</th>
           <td><input type="text" name="cert_dn[commonName]" value="www.example.com" size="40"></td>
@@ -98,29 +99,23 @@ function create_csr($my_cert_dn, $my_keysize, $my_passphrase, $my_device_type)
 
   $config = $_SESSION['config'];
   // update the conf
-  print("Updating config");
-  // print($config['ca_path']);
-  $template = $_SERVER['CONTEXT_DOCUMENT_ROOT'] . "/include/openssl.conf";
-  $f = file_get_contents($template);
-  $configfile = $config['config'];
-  $san_list = explode("\n", trim($_POST['san']));
-
-$san_list_formated = "";
-$san_list_formated = "\n\n\n[subject_alt_names]\n";
-if (strlen($san_list[0]) >= 3){
-  for($i=0; $i<count($san_list); $i++){
-    $index = $i + 1;
-    $san_list_formated .= 'DNS.' . $index . " = " . $san_list[$i] . "\n";
-  }
-} else {
-  $san_list_formated .= "DNS.1 = " . $_POST['cert_dn']['commonName'] . "\n";
+  print("Creating Domain Config File");
+  //
   
-}
+  $template = $config['config_dir'] . $_POST['cert_dn']['commonName'] . "-openssl.conf";
+  
+  copy($config['ca_path'] .  "openssl.conf", $template);
+  $f = file_get_contents($template);
+  $configfile = $template;
+  if(isset($_POST['san'])){
+    $san_list = explode("\n", trim($_POST['san']));
 
-$newconfig = trim($f . $san_list_formated);
-  // echo $configfile;
-  file_put_contents($configfile, $newconfig);
+    create_conf($san_list,$template);
+    $config['config'] = $template;
+  }
+  
 
+  
 
   $cert_dn = array();
 
@@ -189,6 +184,11 @@ $newconfig = trim($f . $san_list_formated);
 
   $my_details = openssl_csr_get_subject($my_csr);
   $my_public_key_details = openssl_pkey_get_details(openssl_csr_get_public_key($my_csr));
+
+  //delete template
+  // unlink($template);
+
+
 ?>
   <table style='border:1px solid black; width:600px'>
     <tr>
@@ -594,6 +594,7 @@ function view_csr($my_csrfile)
 
 function sign_csr_form($my_values = array('csr_name' => '::zz::'))
 {
+  
   $config = $_SESSION['config'];
 ?>
   <fieldset>
@@ -653,7 +654,7 @@ function sign_csr_form($my_values = array('csr_name' => '::zz::'))
                     if (!is_file($config['cert_path'] . $file) or ($my_values['csr_name'] == "$name$ext")) {
                       if ($my_values['csr_name'] == "$name$ext") $this_selected = " selected=\"selected\"";
                       else $this_selected = "";
-                      print "<option value=\"$name$ext\"" . $this_selected . ">$name$ext</option>\n";
+                      print "<option value=\"$name$ext\"" . $this_selected . ">$name $ext</option>\n";
                     }
                   }
                 }
@@ -674,16 +675,23 @@ function sign_csr_form($my_values = array('csr_name' => '::zz::'))
       print "<b> No Valid CSRs are available to sign.</b>\n";
       ?>
       </p>
+      </fieldset>
     <?PHP
   }
     ?>
-  </fieldset>
+  
 
   <?PHP
 
   function sign_csr($passPhrase, $my_csrfile, $my_days, $my_device_type)
   {
+    $namearr = explode(":",$my_csrfile);
+    $mydom = $namearr[0];
+    //replace generic openssl.conf with domain specific
+    $_SESSION['config']['config'] = $_SESSION['config']['config_dir'] . $mydom . "-openssl.conf";
     $config = $_SESSION['config'];
+    
+    
     $name = base64_encode(substr($my_csrfile, 0, strrpos($my_csrfile, '.')));
     $ext = substr($my_csrfile, strrpos($my_csrfile, '.'));
     $my_base64_csrfile = $name . $ext;
@@ -738,7 +746,7 @@ function sign_csr_form($my_values = array('csr_name' => '::zz::'))
     }
 
     print "<b>Signing CSR...</b><br/>";
-    $my_serial = sprintf("%04d", get_serial());
+    $my_serial = sprintf("%04d", get_serial());    
     $my_scert = openssl_csr_sign($my_csr, $my_ca_cert, $my_ca_privkey, $my_days, $config, $my_serial) or die('Fatal: Error signing CSR.');
     print "Done<br/><br/>\n";
 

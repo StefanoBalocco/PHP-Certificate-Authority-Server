@@ -32,6 +32,9 @@ return $my_valid_cert;
 
 
 function checkError($result) {
+	$nokeyError=0;
+	$errorCount=0;
+	$errors="";
 	if (!$result) {
 		while (($error = openssl_error_string()) !== false) {
 			if ($error == "error:0E06D06C:configuration file routines:NCONF_get_string:no value") {
@@ -57,7 +60,7 @@ function download_header_code($my_filename,$my_file,$my_application_type) {
   header("Pragma: public");
   header("Content-Type: ".$my_application_type);
   header("Content-Disposition: attachment; filename=\"".$my_filename."\"");
-  print $my_file;
+  print(trim($my_file));
 }
 
 
