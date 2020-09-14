@@ -179,10 +179,7 @@ $newconfig = trim($f . $san_list_formated);
 
   print "<b>Creating CSR...</b><br/>";
 
-//add SAN to config array
-
-
-   $my_csr = openssl_csr_new($cert_dn, $privkey, $config) or die('Fatal: Error creating CSR');
+  $my_csr = openssl_csr_new($cert_dn, $privkey, $config) or die('Fatal: Error creating CSR');
     //openssl req -new -sha256 -key example_com.key -out example_com.csr -config C:\WampDeveloper\Config\Apache\openssl.cnf
   print "Done<br/><br/>\n";
 
@@ -352,7 +349,7 @@ function import_csr($my_csr)
   //CN:Email:OU:O:L:ST:GB 
   $cert_dn = openssl_csr_get_subject($my_csr);
   $my_csrfile = "";
-  while (list($key, $val) = each($config['blank_dn'])) {
+  foreach($config['blank_dn'] as $key => $val) {
     if (isset($cert_dn[$key]))
       $my_csrfile = $my_csrfile . $cert_dn[$key] . ":";
     else
