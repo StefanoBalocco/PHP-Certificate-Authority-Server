@@ -3,41 +3,10 @@ function switch_ca_form()
 {
   session_unset();
   $config = update_config();
-  $dh = opendir($config['certstore_path']) or die('Fatal: Unable to opendir Certificate Store.');
-?>
-<!-- adding spacer -->
-<div>&nbsp;</div>
-  <fieldset>
-    <legend><b>Switch to a different CA<br \></legend>
-    If you wish to create a new Sub-CA please select create CSR and select device type as Sub_CA.
-
-    <form action="index.php" method="post">
-      <input type="hidden" name="menuoption" value="switchca" />
-      <table style="width: 600px;">
-        <tr>
-          <td>Certificate Authority:
-          <td><select name="ca_name" rows="6">
-              <option value="">--- Select a CA</option>
-              <option value="zzCREATEZZnewZZ">Create New Root CA</option>
-              <?PHP
-              while (($file = readdir($dh)) !== false) {
-                //	if (substr($file, -4) == ".csr") {
-                if (is_dir($config['certstore_path'] . $file) && ($file != '.') && ($file != '..')) {
-                  print "<option>$file</option>";
-                }
-              }
-              ?>
-            </select>
-        <tr>
-          <td>
-          <td><input type="submit" value="Submit CA" />
-      </table>
-    </form>
-    </fieldset>
-    </b>
-
-    </p>
-  <?PHP
+  //check for dir before failing
+    $dh = opendir($config['certstore_path']) or die("Certstore not found-- check settings.php or your folder names");
+  // 
+include("./forms/switch_ca.php");
 }
 
 function delete_ca_form(&$my_errors = array('errors' => FALSE))

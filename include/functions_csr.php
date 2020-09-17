@@ -1,318 +1,37 @@
+<div>&nbsp;</div>
 <?PHP
 // ==================================================================================================================
 // =================== CREATE CSR =====================================================================================
 // ==================================================================================================================
 
-function createCSR_form()
+function createCSR_form($config)
 {
-  $config = $_SESSION['config'];
   $my_x509_parse = openssl_x509_parse(file_get_contents($config['cacert']));
-
-
-?>
-  <fieldset>
-    <legend><b>Create a new CSR</b></legend>
-    <form action="index.php" method="post">
-      <input type="hidden" name="menuoption" value="createCSR" />
- 
-        <table style="width: 100%;">
-        <tr>
-          <th style='text-align: right'>Common Name</th>
-          <td><input type="text" name="cert_dn[commonName]" value="www.example.com" size="40"></td>
-        </tr>
-        <tr>
-        <th style='text-align: right'>Alternative Names (SAN)</th>
-        <td><small><i>Please enter one per line</i></small><br><textarea rows=4 cols=37 name='san' id='san'></textarea></td>
-        </tr>
-        <tr>
-          <th style='text-align: right'>Contact Email Address</th>
-          <td><input type="text" name="cert_dn[emailAddress]" value=<?PHP if (array_key_exists('emailAddress', $my_x509_parse['subject'])) print $my_x509_parse['subject']['emailAddress'];
-                                                                    else print '""'; ?> size="30"></td>
-        </tr>
-        <tr>
-          <th style='text-align: right'>Organizational Unit Name</th>
-          <td><input type="text" name="cert_dn[organizationalUnitName]" value=<?PHP if (array_key_exists('OU', $my_x509_parse['subject'])) print $my_x509_parse['subject']['OU'];
-                                                                              else print '""'; ?> size="30"></td>
-        </tr>
-        <tr>
-          <th style='text-align: right'>Organization Name</th>
-          <td><input type="text" name="cert_dn[organizationName]" value=<?PHP if (array_key_exists('O', $my_x509_parse['subject'])) print $my_x509_parse['subject']['O'];
-                                                                        else print '""'; ?> size="25"></td>
-        </tr>
-        <tr>
-          <th style='text-align: right'>City</th>
-          <td><input type="text" name="cert_dn[localityName]" value=<?PHP if (array_key_exists('L', $my_x509_parse['subject'])) print $my_x509_parse['subject']['L'];
-                                                                    else print '""'; ?> size="25"></td>
-        </tr>
-        <tr>
-          <th style='text-align: right'>State</th>
-          <td><input type="text" name="cert_dn[stateOrProvinceName]" value=<?PHP if (array_key_exists('ST', $my_x509_parse['subject'])) print $my_x509_parse['subject']['ST'];
-                                                                            else print '""'; ?> size="25"></td>
-        </tr>
-        <tr>
-          <th style='text-align: right'>Country</th>
-          <td><input type="text" name="cert_dn[countryName]" value=<?PHP if (array_key_exists('C', $my_x509_parse['subject'])) print $my_x509_parse['subject']['C'];
-                                                                    else print '""'; ?> size="2"></td>
-        </tr>
-        <tr>
-          <th style='text-align: right'>Key Size</th>
-          <td><select name="cert_dn[keySize]">
-              <option value="1024">1024bits</option>
-              <option value="2048bits" selected>2048bits</option>
-              <option value="4096bits">4096bits</option>
-            </select>
-
-          </td>
-        </tr>
-        <tr>
-          <th style='text-align: right'>Device Type</th>
-          <td>
-            <select name="device_type">
-              <option value="client_cert">Client</option>
-              <option value="server_cert" selected="selected">Server</option>
-              <option value="msdc_cert">Microsoft Domain Controller</option>
-              <option value="subca_cert">Sub_CA</option>
-              <option value="8021x_client_cert">802.1x Client</option>
-              <option value="8021x_server_cert">802.1x Server</option>
-
-            </select>
-          </td>
-        </tr>
-        <tr>
-          <th style='text-align: right'>Certificate Passphrase</th>
-          <td><input type="password" name="passphrase" /></td>
-        </tr>
-
-        <tr>
-          <td>&nbsp;</td>
-          <td style='text-align: right'><input type="submit" value="Create CSR" /></td>
-        </tr>
-      </table>
-    </form>
-  </fieldset>
-<?PHP
+  include("forms/create_csr.php");
 
 }
 
-function create_csr($my_cert_dn, $my_keysize, $my_passphrase, $my_device_type)
-{
-
-  $config = $_SESSION['config'];
-  // update the conf
-  print("Creating Domain Config File");
-  //
+function createCSRComplete($my_cert_dn, $my_keysize, $my_passphrase, $my_device_type){
+  //call function create csr from ssl-functions
+  $results = create_csr($my_cert_dn, $my_keysize, $my_passphrase, $my_device_type);
   
-  $template = $config['config_dir'] . $_POST['cert_dn']['commonName'] . "-openssl.conf";
-  
-  copy($config['ca_path'] .  "openssl.conf", $template);
-  $f = file_get_contents($template);
-  $configfile = $template;
-  if(isset($_POST['san'])){
-    $san_list = explode("\n", trim($_POST['san']));
+  $my_details = $results[0];
+  $my_public_key_details = $results[1];
+  // $my_csrfile = $results[2];
 
-    create_conf($san_list,$template);
-    $config['config'] = $template;
-  }
-  
+  include("forms/create_csr_complete.php");
 
-  
-
-  $cert_dn = array();
-
-  print "<h1>Creating Certificate Key</h1>";
-  print "PASSWORD:" . $my_passphrase . "<BR>";
-
-  foreach($my_cert_dn as $key => $val){
-    if (array_key_exists($key, $my_cert_dn))
-      if (strlen($my_cert_dn[$key]) > 0) {
-        $cert_dn[$key] = $my_cert_dn[$key];
-      }
-  }
-  $my_csrfile = "";
-  foreach($config['blank_dn'] as $key => $value){
-    if (isset($cert_dn[$config['convert_dn'][$key]]))
-      $my_csrfile = $my_csrfile . $cert_dn[$config['convert_dn'][$key]] . ":";
-    else
-      $my_csrfile = $my_csrfile . ":";
-  }
-  $my_csrfile = substr($my_csrfile, 0, strrpos($my_csrfile, ':'));
-  $filename = base64_encode($my_csrfile);
-  print "CSR Filename : " . $my_csrfile . "<BR>";
-  if ($my_device_type == 'ca_cert') {
-    $client_keyFile = $config['cakey'];
-    $client_reqFile = $config['req_path'] . $filename . ".pem";
-  } else {
-    $client_keyFile = $config['key_path'] . $filename . ".pem";
-    $client_reqFile = $config['req_path'] . $filename . ".pem";
-  }
-
-  print "<h1>Creating Client CSR and Client Key</h1>";
-
-  print "<b>Checking your DN (Distinguished Name)...</b><br/>";
-  print "<pre>DN = " . var_export($cert_dn, 1) . "</pre>";
-  print "<b>Generating new key...</b><br/>";
-  print $my_keysize;
-  //$my_new_config=array('config'=>$config['config'],'private_key_bits'=>$config['private_key_bits'],'x509_extensions'=>$config['x509_extensions']);
-  $my_new_config = array('config' => $config['config'], 'private_key_bits' => (int)$my_keysize);
-
-  //,'private_key_bits'=>$config['private_key_bits'],'x509_extensions'=>$config['x509_extensions']);
-
-  
-
-  $privkey = openssl_pkey_new($my_new_config) or die('Fatal: Error creating Certificate Key');
-  print "Done<br/><br/>\n";
-
-  if ($my_device_type == 'ca_cert') {
-    print "<b>Exporting encoded private key to CA Key file...</b><br/>";
-  } else {
-    print "<b>Exporting encoded private key to file...</b><br/>";
-  }
-  openssl_pkey_export_to_file($privkey, $client_keyFile, $my_passphrase) or die('Fatal: Error exporting Certificate Key to file');
-
-
-  print "Done<br/><br/>\n";
-
-  print "<b>Creating CSR...</b><br/>";
-
-  $my_csr = openssl_csr_new($cert_dn, $privkey, $config) or die('Fatal: Error creating CSR');
-    //openssl req -new -sha256 -key example_com.key -out example_com.csr -config C:\WampDeveloper\Config\Apache\openssl.cnf
-  print "Done<br/><br/>\n";
-
-  print "<b>Exporting CSR to file...</b><br/>";
-  openssl_csr_export_to_file($my_csr, $client_reqFile) or die('Fatal: Error exporting CSR to file');
-  print "Done<br/><br/>\n";
-
-  $my_details = openssl_csr_get_subject($my_csr);
-  $my_public_key_details = openssl_pkey_get_details(openssl_csr_get_public_key($my_csr));
-
-  //delete template
-  // unlink($template);
-
-
-?>
-  <table style='border:1px solid black; width:600px'>
-    <tr>
-      <th>Common Name (eg www.golf.local)</th>
-      <td><?PHP print $my_details['CN']; ?></td>
-    </tr>
-    <tr>
-      <th>Contact Email Address</th>
-      <td><?PHP print $my_details['emailAddress']; ?></td>
-    </tr>
-    <tr>
-      <th>Organizational Unit Name</th>
-      <td><?PHP print $my_details['OU']; ?></td>
-    </tr>
-    <tr>
-      <th>Organization Name</th>
-      <td><?PHP print $my_details['O']; ?></td>
-    </tr>
-    <tr>
-      <th>City</th>
-      <td><?PHP print $my_details['L']; ?></td>
-    </tr>
-    <tr>
-      <th>State</th>
-      <td><?PHP print $my_details['ST']; ?></td>
-    </tr>
-    <tr>
-      <th>Country</th>
-      <td><?PHP print $my_details['C']; ?></td>
-    </tr>
-    <tr>
-      <th>Key Size</th>
-      <td><?PHP print $my_public_key_details['bits']; ?></td>
-    </tr>
-  
-  </table>
-<?PHP
-  print "<h1>Client CSR and Key - Generated successfully</h1>";
-  return $my_csrfile . '.pem';
 }
 // ==================================================================================================================
 // =================== DOWNLOAD CSR =====================================================================================
 // ==================================================================================================================
 
-function download_csr_form()
+function download_csr_form($config)
 {
-  $config = $_SESSION['config'];
-?>
-  <fieldset>
-
- 
-    <legend>Download a CSR</legend>
-    <form action="index.php" method="post">
-      <input type="hidden" name="menuoption" value="download_csr">
-      <table style="width: 90%;">
-
-        <tr>
-          <th>Rename Extension</th>
-          <td><input type="radio" name="rename_ext" value="FALSE" checked />Do not Rename<br><input type="radio" name="rename_ext" value="cer" /> Rename to cer<br><input type="radio" name="rename_ext" value="csr" /> Rename to csr<br></td>
-        </tr>
-        <?PHP
-        /*
-
-<input type="radio" name="cer_ext" value="FALSE" checked /> No <input type="radio" name="cer_ext" value="CER" /> Yes</td></tr>
-<tr><th>Rename Extension to .pfx</th><td><input type="radio" name="pfx_ext" value="FALSE" checked /> No <input type="radio" name="cer_ext" value="PFX" /> Yes</td></tr>
-*/
-        ?>
-        <tr>
-          <th>Name </th>
-          <td><select name="csr_name" rows="6">
-              <option value="">--- Select a CSR
-                <?php
-                $dh = opendir($config['req_path']) or die('Unable to open ' . $config['req_path']);
-                while (($file = readdir($dh)) !== false) {
-                  if (($file !== ".htaccess") && is_file($config['req_path'] . $file)) {
-                    $name = base64_decode(substr($file, 0, strrpos($file, '.')));
-                    $ext = substr($file, strrpos($file, '.'));
-                    print "<option value=\"$name$ext\">$name$ext</option>\n";
-                  }
-                }
-                ?>
-            </select></td>
-        </tr>
-        <tr>
-          <td>
-          <td><input type="submit" value="Download CSR">
-      </table>
-    </form>
-    </fieldset>
-<?PHP
+include("./forms/download_csr.php");
 }
 
-function download_csr($this_cert, $cer_ext)
-{
-  $config = $_SESSION['config'];
-  if (!isset($cer_ext))
-    $cer_ext = 'FALSE';
 
-  if ($this_cert == "zzTHISzzCAzz") {
-    $my_x509_parse = openssl_x509_parse(file_get_contents($config['cacert']));
-    $filename = $my_x509_parse['subject']['CN'] . ":" . $my_x509_parse['subject']['OU'] . ":" . $my_x509_parse['subject']['O'] . ":" . $my_x509_parse['subject']['L'] . ":" . $my_x509_parse['subject']['ST'] . ":" . $my_x509_parse['subject']['C'];
-    $download_certfile = $config['cacert'];
-    $ext = ".pem";
-    //$application_type="application/x-x509-ca-cert";
-    $application_type = 'application/octet-stream';
-  } else {
-    $filename = substr($this_cert, 0, strrpos($this_cert, '.'));
-    $ext = substr($this_cert, strrpos($this_cert, '.'));
-    $download_certfile = base64_encode($filename);
-    $download_certfile = $config['req_path'] . $download_certfile . $ext;
-    $application_type = 'application/octet-stream';
-  }
-  if ($cer_ext != 'FALSE')
-    $ext = '.' . $cer_ext;
-
-  if (file_exists($download_certfile)) {
-    $myCert = join("", file($download_certfile));
-    download_header_code($filename . $ext, $myCert, $application_type);
-  } else {
-    printHeader("Certificate Retrieval");
-    print "<h1> $filename - X509 CA certificate not found</h1>\n";
-    printFooter(FALSE);
-  }
-}
 
 
 // ==================================================================================================================

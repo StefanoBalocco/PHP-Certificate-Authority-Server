@@ -3,9 +3,10 @@ th .formtitles {
     margin-right:3px;
 }
 
-fieldset {
+/* fieldset {
+    margin-left:20px;
     width:800px;
-}
+} */
 
 legend {
     color:#30A8C3;
@@ -13,4 +14,8 @@ legend {
 
 .header-underline {
     border-bottom:2px solid gray;
+}
+
+li{
+    font-size: 10px;
 }
