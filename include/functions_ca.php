@@ -87,61 +87,9 @@ function delete_ca($my_certstore, $my_ca_name)
 function create_ca_form()
 {
   $_SESSION['my_ca'] = 'create_ca';
+  include("./forms/create_ca.php");
   ?>
-    <fieldset>
-      <legend><b>Create a new Root Certificate Authority</b></legend>
-      <form action="index.php" method="post">
-        <input type="hidden" name="create_ca" value="create_ca" />
-        <input type="hidden" name="menuoption" value="create_ca" />
-        <input type="hidden" name="device_type" value="ca_cert" />
-
-        <table style="width: 600px;">
-          <tr>
-            <th >Common Name (eg root-ca.golf.local)</th>
-            <td><input type="text" name="cert_dn[commonName]" value="root.example.com" size="40"></td>
-          </tr>
-          <tr>
-            <th>Contact Email Address</th>
-            <td><input type="text" name="cert_dn[emailAddress]" value="cert@example.com" size="30"></td>
-          </tr>
-          <tr>
-            <th>Organizational Unit Name</th>
-            <td><input type="text" name="cert_dn[organizationalUnitName]" value="Device Cert Auth" size="30"></td>
-          </tr>
-          <tr>
-            <th>Organization Name</th>
-            <td><input type="text" name="cert_dn[organizationName]" value="Example.com Device Authority" size="25"></td>
-          </tr>
-          <tr>
-            <th>City</th>
-            <td><input type="text" name="cert_dn[localityName]" value="New Orleans" size="25"></td>
-          </tr>
-          <tr>
-            <th>State</th>
-            <td><input type="text" name="cert_dn[stateOrProvinceName]" value="Louisiana" size="25"></td>
-          </tr>
-          <tr>
-            <th>Country</th>
-            <td><input type="text" name="cert_dn[countryName]" value="US" size="3"></td>
-          </tr>
-          <tr>
-            <th>Key Size</th>
-            <td><input type="radio" name="cert_dn[keySize]" value="1024" /> 1024bits <input type="radio" name="cert_dn[keySize]" value="2048" /> 2048bits<input type="radio" name="cert_dn[keySize]" value="4096" checked /> 4096bits</td>
-          </tr>
-          <tr>
-            <th>Number of Days</th>
-            <td><input type="text" name="cert_dn[days]" size="4" value="7300" /></td>
-          </tr>
-          <tr>
-            <th>Certificate Passphrase</th>
-            <td><input type="password" name="passphrase" /></td>
-          </tr>
-          <tr>
-            <td>
-            <td><input type="submit" value="Create Root CA" />
-        </table>
-      </form>
-    </fieldset>
+    
 
 
     <?PHP
