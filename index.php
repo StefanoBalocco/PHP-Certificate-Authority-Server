@@ -15,7 +15,6 @@ $config = update_config();
 $_SESSION['config']=$config;
 
 include("./include/functions_setup.php");
-include("./include/functions_layout.php");
 include("./include/ssl-functions.php");
 include("./include/functions_csr.php");
 include("./include/functions_cert.php");
@@ -31,6 +30,7 @@ $page_variables=array();
 if (count($_POST) or count($_GET)) {
   $page_variables = array_merge($_POST,$_GET);
   }
+  
 if (!isset($page_variables['menuoption']))
     $page_variables['menuoption'] = FALSE;
 if (!isset($page_variables['ca_name']))
@@ -90,9 +90,7 @@ if (isset($page_variables['cert_dn']['keySize'])) {
 // =================================================================================================================================================================
 // =================================================================================================================================================================
 
-
-
+//this will call header and footer
 include("menu_switch.php");
-    // break;
 
 ?>

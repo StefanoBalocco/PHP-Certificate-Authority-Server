@@ -1,22 +1,58 @@
 <?PHP
 $config = $_SESSION["config"];
+if(!isset($_SESSION['my_ca'])){
+    $_SESSION['my_ca'] = "CA Not Selected";
+}
+
+if(isset($_GET["menuoption"])){
+    $menuoption = $_GET["menuoption"];
+    $disable_menu = false;
+    $my_title = $_SESSION['my_ca'];
+} elseif(isset($_POST["menuoption"])){
+    $menuoption = $_POST["menuoption"];
+    $disable_menu = false;
+    $my_title = $_SESSION['my_ca'];
+} else {
+    if(!isset($_SESSION) ){
+        //if session is not set we show the switch CA
+        $menuoption = "switchca_form";
+        $my_title = "NO CA Selected";
+    } else {
+        if(strpos($_SESSION['config']['ca_path'],'not_defined') > 3){
+            $menuoption = "switchca_form";
+            $my_title = "NO CA Selected";
+            $disable_menu = true;
+        } else {
+            //assume session is set and therefore we'll show the summary
+            $menuoption = "show_summary";
+            $disable_menu = false;
+            $my_title = $_SESSION['my_ca'];
+        } 
+    }
+}
+
+
 switch ($menuoption) {
     
     case "menu":
         printHeader('CA Administration');
+        printMenu($disable_menu);
         printFooter();
     break;
 
     case "switchca_form":
         printHeader("Switch CA",FALSE);
+        printMenu($disable_menu);
         switch_ca_form();
         printFooter(FALSE);
     break;
 
     case "switchca":
         printHeader("Switch CA");
-		$_SESSION['config']=array();
-		$_SESSION['my_ca'] = $page_variables['ca_name'];
+        printMenu($disable_menu);
+        $_SESSION['config']=array();
+        
+		$_SESSION['my_ca'] = $_POST['ca_name'];
 		$_SESSION['config']=update_config();
 		show_summary();
         printFooter();
@@ -44,6 +80,7 @@ switch ($menuoption) {
 
     case "download_cert_form":
         printHeader('Download Certificate');
+        printMenu($disable_menu);
         download_cert_form();
         printFooter();
     break;
@@ -54,6 +91,7 @@ switch ($menuoption) {
 
     case "get_public_ssh_key_form":
         printHeader('Get Public SSH Key');
+        printMenu($disable_menu);
         get_public_ssh_key_form();
         printFooter();
     break;
@@ -65,6 +103,7 @@ switch ($menuoption) {
     case "get_mod_private_form":
         if ($page_variables['print_content_only'] == FALSE)
           printHeader('Get Private Key');
+          printMenu($disable_menu);
 		if (isset($page_variables['key_name']))
           get_mod_private_form(array('key_name'=>$page_variables['key_name']));
 		else
@@ -85,8 +124,9 @@ switch ($menuoption) {
 
     case "view_csr_details":
         if ($page_variables['print_content_only'] == FALSE)
-          printHeader('View CSR Details');
-        view_csr($page_variables['csr_name']);
+            printHeader('View CSR Details');
+            printMenu($disable_menu);
+            view_csr($page_variables['csr_name']);
         if ($page_variables['print_content_only'] == FALSE)
           printFooter();
     break;
@@ -94,6 +134,7 @@ switch ($menuoption) {
     case "check_key_passphrase_form":
         if ($page_variables['print_content_only'] == FALSE)
           printHeader('Check CA Passphrase');
+          printMenu($disable_menu);
 		if (isset($page_variables['key_name']))
           check_key_passphrase_form(array('key_name'=>$page_variables['key_name']));
 		else
@@ -104,13 +145,15 @@ switch ($menuoption) {
 
     case "check_key_passphrase":
         printHeader('Check CA Passphrase');
+        printMenu($disable_menu);
         check_key_passphrase($page_variables['pass'],$page_variables['key_name']);
         printFooter();
     break;
 
     case "revoke_cert_form":
 	    if ($page_variables['print_content_only'] == FALSE)
-		  printHeader('Revoke a Certificate');
+          printHeader('Revoke a Certificate');
+          printMenu($disable_menu);
 		if (isset($page_variables['cert_serial']))
           revoke_cert_form(array('cert_serial'=>$page_variables['cert_serial']));
 		else
@@ -121,6 +164,7 @@ switch ($menuoption) {
 
     case "revoke_cert":
         printHeader('Revoke a Certificate');
+        printMenu($disable_menu);
         revoke_cert($page_variables['cert_serial'],$page_variables['pass']);
         printFooter();
     break;
@@ -128,6 +172,7 @@ switch ($menuoption) {
     case "convert_cert_pkcs12_form":
 	    if ($page_variables['print_content_only'] == FALSE)
           printHeader('Convert Certificate to PKCS#12');
+          printMenu($disable_menu);
 		if (isset($page_variables['cert_name']))
           convert_cert_pkcs12_form(array('cert_name'=>$page_variables['cert_name']));
 		else
@@ -138,48 +183,58 @@ switch ($menuoption) {
 
     case "convert_cert_pkcs12":
         printHeader('Convert Certificate to PKCS#12');
+        printMenu($disable_menu);
         convert_cert_pkcs12($page_variables['cert_name'],$page_variables['pkey_pass'],$page_variables['pkcs12_pass']);
         printFooter();
     break;
 
     case "createCSR_form":
         printHeader('Creating the CSR');
+        printMenu($disable_menu);
         createCSR_form($_SESSION['config']);
         printFooter();
     break;
 
     case "createCSRComplete":
         printHeader('Creating the CSR');
+        printMenu($disable_menu);
         createCSRComplete($page_variables['cert_dn'],$page_variables['cert_dn']['keySize'],$page_variables['passphrase'],$page_variables['device_type']);
         printFooter();
     break;
 
     case "import_CSR_form":
         printHeader('Import a CSR');
+        printMenu($disable_menu);
         import_csr_form();
         printFooter();
     break;
 
     case "import_CSR":
         printHeader('Import a CSR');
+        printMenu($disable_menu);
         import_csr($page_variables['request']);
         printFooter();
     break;
 
     case "upload_CSR_form":
         printHeader('Upload a CSR');
+        printMenu($disable_menu);
         upload_csr_form();
         printFooter();
     break;
 
     case "upload_CSR":
         printHeader('Upload a CSR');
+        printMenu($disable_menu);
         upload_csr($_FILES['uploadedfile']);
         printFooter();
     break;
 
     case "sign_csr_form":
-        if ($page_variables['print_content_only']== FALSE) printHeader('Signing CSR');
+        if ($page_variables['print_content_only']== FALSE){
+            printHeader('Signing CSR');
+            printMenu($disable_menu);
+        }
 		if (isset($page_variables['csr_name']))
           sign_csr_form(array('csr_name'=>$page_variables['csr_name']));
 		else
@@ -189,22 +244,26 @@ switch ($menuoption) {
 
     case "sign_csr":
         printHeader('Signing CSR');
+        printMenu($disable_menu);
         sign_csr($page_variables['pass'],$page_variables['csr_name'],$page_variables['days'],$page_variables['device_type']);
         printFooter();
     break;
 
     case "setup_certstore_form":
         printHeader('Setup CA Certificate Store');
+        printMenu($disable_menu);
         setup_certstore_form();
     break;
 
     case "setup_certstore":
         printHeader('Setup CA Certificate Store');
+        printMenu($disable_menu);
         setup_certstore($page_variables['certstore_path']);
     break;			
 
     case "create_ca_form":
         printHeader('Creating new Root CA - Part 1');
+        printMenu($disable_menu);
         create_ca_form();
     break;
 
@@ -213,11 +272,13 @@ switch ($menuoption) {
         $config=update_config();
         $_SESSION['config']=$config;
         printHeader('Creating new Root CA - Part 2');
+        printMenu($disable_menu);
         create_ca($config['certstore_path'], $page_variables['device_type'],$page_variables['cert_dn'],$page_variables['passphrase']);  
     break;
 
 	case "delete_ca_form":
-		printHeader('Delete a CA');
+        printHeader('Delete a CA');
+        printMenu($disable_menu);
 		delete_ca_form();
 	break;
 
@@ -239,19 +300,24 @@ switch ($menuoption) {
 		  }
  	    $config=update_config();
 		$_SESSION['config']=$config;
-		printHeader('Delete a CA');
+        printHeader('Delete a CA');
+        printMenu($disable_menu);
 		delete_ca($config['certstore_path'],$page_variables['ca_name']);  
 	break;
 
     case "view_cert_details_form":
         printHeader('View Certificate Details');
+        printMenu($disable_menu);
         view_cert_details_form();
         printFooter();
     break;
 
     case "view_cert_details":
-        if ($page_variables['print_content_only']== FALSE)
-          printHeader('View Certificate Details');
+        if ($page_variables['print_content_only']== FALSE){
+            printHeader('View Certificate Details');
+            printMenu($disable_menu);
+        }
+          
         view_cert($page_variables['cert_name']);
         if ($page_variables['print_content_only']== FALSE)
           printFooter();	
@@ -259,12 +325,14 @@ switch ($menuoption) {
 
     case "show_summary":
         printHeader('Show Certificate Authority Summary');
+        printMenu($disable_menu);
         show_summary();
         printFooter();
     break;
 
 	default:
         printHeader("Unknown area");
+        printMenu($disable_menu);
         print "Unknown menuoption.";
         printFooter();
         

@@ -10,7 +10,7 @@
 
 function create_config($config, $cn){
     //this function will create the custom config file allowing for multiple subject alternative names such as wildcard domains
-    print("Creating Custom OpenSSL config file");
+    print("<div class='alert-success'>Creating Custom OpenSSL config file</div><br>");
     $template = $config['config_dir'] . $cn . "-openssl.conf";
     copy($config['ca_path'] .  "openssl.conf", $template);
     
@@ -38,8 +38,8 @@ function create_csr($my_cert_dn, $my_keysize, $my_passphrase, $my_device_type)
 
     $cert_dn = array();
 
-    print "<h1>Creating Certificate Key</h1>";
-    print "PASSWORD:" . $my_passphrase . "<BR>";
+    print "<div class='alert-success'>Creating Certificate Key</div>";
+    print "<div class='alert-warning'>PASSWORD set: " . $my_passphrase . "</div><br>";
 
     foreach ($my_cert_dn as $key => $val) {
         if (array_key_exists($key, $my_cert_dn))
@@ -62,7 +62,7 @@ function create_csr($my_cert_dn, $my_keysize, $my_passphrase, $my_device_type)
     $my_csrfile = substr($my_csrfile, 0, strrpos($my_csrfile, ':'));
 
     $filename = base64_encode($my_csrfile);
-    print "CSR Filename : " . $my_csrfile . "<BR>";
+    print "<div class='alert-success'>CSR Filename : " . $my_csrfile . "</div>";
 
     if ($my_device_type == 'ca_cert') {
         $client_keyFile = $config['cakey'];
@@ -72,27 +72,27 @@ function create_csr($my_cert_dn, $my_keysize, $my_passphrase, $my_device_type)
         $client_reqFile = $config['req_path'] . $filename . ".pem";
     }
 
-    print "<h1>Creating Client CSR and Client Key</h1>";
+    print "<div class='alert-success'>Creating Client CSR and Client Key</div><br>";
 
-    print "<b>Checking your DN (Distinguished Name)...</b><br/>";
+    print "<div class='alert-success'><b>Checking your DN (Distinguished Name)...</b></div>";
     
     $my_new_config = array('config' => $config['config'], 'private_key_bits' => (int)$my_keysize);
     
     $privkey = openssl_pkey_new($my_new_config) or die('Fatal: Error creating Certificate Key');
     
-    print "Done<br/><br/>\n";
+    print "<div class='alert-secondary'>Done</div><br/>\n";
 
     if ($my_device_type == 'ca_cert') {
-        print "<b>Exporting encoded private key to CA Key file...</b><br/>";
+        print "<div class='alert-success'><b>Exporting encoded private key to CA Key file...</b></div>";
     } else {
-        print "<b>Exporting encoded private key to file...</b><br/>";
+        print "<div class='alert-success'><b>Exporting encoded private key to file...</b></div>";
     }
     openssl_pkey_export_to_file($privkey, $client_keyFile, $my_passphrase) or die('Fatal: Error exporting Certificate Key to file');
 
 
-    print "Done<br/><br/>\n";
+    print "<div class='alert-secondary'>Done</div><br/>\n";
 
-    print "<b>Creating CSR...</b><br/>";
+    print "<div class='alert-success'><b>Creating CSR...</b></div>";
   
     /*
     $cert_dn
@@ -110,23 +110,23 @@ function create_csr($my_cert_dn, $my_keysize, $my_passphrase, $my_device_type)
     */
     $my_csr = openssl_csr_new($cert_dn, $privkey, $config) or die('Fatal: Error creating CSR');
     //openssl req -new -sha256 -key example_com.key -out example_com.csr -config C:\WampDeveloper\Config\Apache\openssl.cnf
-    print "Done<br/><br/>\n";
+    print "<div class='alert-secondary'>Done</div><br/>\n";
 
-    print "<b>Exporting CSR to file...</b><br/>";
+    print "<div class='alert-success'><b>Exporting CSR to file...</b></div>";
     openssl_csr_export_to_file($my_csr, $client_reqFile, FALSE) or die('Fatal: Error exporting CSR to file');
     
-    print "Done<br/><br/>\n";
+    print "<div class='alert-secondary'>Done</div><br/>\n";
 
     $my_details = openssl_csr_get_subject($my_csr);
     $my_public_key_details = openssl_pkey_get_details(openssl_csr_get_public_key($my_csr));
 
     // print_r($my_details);
-    print "<h1>Client CSR and Key - Generated successfully</h1>";
+    print "<div class='alert-success'><b>Client CSR and Key - Generated successfully</b></div>";
 
     // print($my_public_key_details['key']);
     $data = openssl_public_decrypt($my_public_key_details['key'],$finaltext, $my_public_key_details['key']);
 
-    return array($my_details,$my_public_key_details);
+    return array($my_details,$my_public_key_details,$my_csrfile);
 }
 
 
@@ -226,4 +226,24 @@ function create_conf($san_list,$configfile){
     printFooter(FALSE);
   }
 }
+
+function create_ca($my_certstore_path, $my_device_type, $my_cert_dn, $my_passphrase)
+  {
+
+    //if (!is_dir($my_certstore_path.$my_cert_dn['commonName']))
+    create_cert_store($my_certstore_path, $my_cert_dn['commonName']);
+    //else
+    //  die('Fatal: CA Store already exists for '. $my_cert_dn['commonName']);
+
+    $my_days = $my_cert_dn['days'];
+    $my_keysize = $my_cert_dn['keySize'];
+    unset($my_cert_dn['days']);
+    unset($my_cert_dn['keySize']);
+
+    $result = create_csr($my_cert_dn, $my_keysize, $my_passphrase, $my_device_type);
+    $my_csrfile = $result[2] . ".pem";
+    
+    sign_csr($my_passphrase, $my_csrfile, $my_days, $my_device_type);
+    //to do, check sign_csr code for device type
+  }
 ?>

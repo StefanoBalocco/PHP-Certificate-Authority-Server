@@ -7,23 +7,24 @@ function setup_certstore_form()
 {
   $this_certstore = dirname($_SESSION['cwd']) . "/certstore";
 ?>
-<div>&nbsp;</div>
-  <fieldset>
+<div class="container-fluid">
+
+ <fieldset>
     <legend>PHP-CA Configure Certificate Store</legend>
     <b>Certificate Store Location</b><br />
-    <form action="index.php" method="post">
+    <form action="index.php" method="post" class="formDiv">
       <input type="hidden" name="menuoption" value="setup_certstore" />
-      <table style="width: 600px;">
-        <tr>
-          <th>Please Enter Absolute Path for Cert Store: (eg. /var/www/certstore)</th>
-        </tr>
-        <tr>
-          <td><input type="text" name="certstore_path" value="<?PHP print $this_certstore; ?>" size="30" />
-        <tr>
-          <td><input type="submit" value="Submit Certificate Store" />
-      </table>
+        <div class="form-group" style="width:400px">
+          <label for=""></label>
+          <input type="text" class="form-control" name="certstore_path" id="" aria-describedby="helpId" value="<?PHP print $this_certstore; ?>" placeholder="">
+          <small id="helpId" class="form-text text-muted">Do use a folder in the webserver path</small>
+          <input type="submit" value="Submit Certificate Store" class="form-control button-green" />
+        </div>
+     
     </form>
   </fieldset>
+</div>
+ 
 
 <?PHP
 }
@@ -42,6 +43,7 @@ function setup_certstore($my_certstore_path)
     print "You do not have write permissions to the file " . $_SESSION['cwd'] . "/include/settings.php<BR>One way around this in Linux is to use<BR>chown -R www-data:www-data " . $_SESSION['cwd'] . "/include<BR>\n<BR>\n";
     print("Or paste the folowing in a settings.php file under include<br>");
     $text = file_get_contents('./include/settings.php');
+    if (substr($my_certstore_path, -1) != '/') $my_certstore_path = $my_certstore_path . '/';
     p(str_replace('NOT_DEFINED', $my_certstore_path, $text),'c');
     exit();
   }

@@ -4,16 +4,10 @@ function update_config() {
 $config['certstore_path']="NOT_DEFINED";
 
 if (isset($_SESSION['config']) and isset($_SESSION['my_ca'])){
-  //if for some reason like development :) the certstore does not exist reset all vars and reload
-  if(is_dir($_SESSION['config']['certstore_path'])===false){
-    $config['ca_path'] = $config['certstore_path']='NOT_DEFINED';
-    echo "nn";
-  } else {
-    $config['ca_path'] = $config['certstore_path'].$_SESSION['my_ca']."/"; 
-  }
-    
+    $config['ca_path'] = $config['certstore_path'].$_SESSION['my_ca']."/";   
+    print($config['ca_path']);
 } else {
-    $config['ca_path'] = $config['certstore_path']='NOT_DEFINED';
+    $config['ca_path'] = $config['certstore_path'].'not_defined';
 }
   
 

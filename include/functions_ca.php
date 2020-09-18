@@ -88,30 +88,11 @@ function create_ca_form()
 {
   $_SESSION['my_ca'] = 'create_ca';
   include("./forms/create_ca.php");
-  ?>
-    
+
+}
 
 
-    <?PHP
-  }
-
-
-  function create_ca($my_certstore_path, $my_device_type, $my_cert_dn, $my_passphrase)
-  {
-
-    //if (!is_dir($my_certstore_path.$my_cert_dn['commonName']))
-    create_cert_store($my_certstore_path, $my_cert_dn['commonName']);
-    //else
-    //  die('Fatal: CA Store already exists for '. $my_cert_dn['commonName']);
-
-    $my_days = $my_cert_dn['days'];
-    $my_keysize = $my_cert_dn['keySize'];
-    unset($my_cert_dn['days']);
-    unset($my_cert_dn['keySize']);
-    $my_csrfile = create_csr($my_cert_dn, $my_keysize, $my_passphrase, $my_device_type);
-    sign_csr($my_passphrase, $my_csrfile, $my_days, $my_device_type);
-    //to do, check sign_csr code for device type
-  }
+  
 
 
   function download_crl_form()

@@ -1,7 +1,7 @@
 <div class="container-fluid">
-    <fieldset>
+    <fieldset class="bg-light">
 
-        <legend><b>Create a new Root Certificate Authority</b></legend>
+        <legend class="bg-info fg-white form-head"><b>Create a new Root Certificate Authority</b></legend>
         <form action="index.php" method="post" class="formDiv">
             <input type="hidden" name="create_ca" value="create_ca" />
             <input type="hidden" name="menuoption" value="create_ca" />

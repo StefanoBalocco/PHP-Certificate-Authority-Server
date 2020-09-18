@@ -1,4 +1,3 @@
-<div>&nbsp;</div>
 <?PHP
 // ==================================================================================================================
 // =================== CREATE CSR =====================================================================================
@@ -404,7 +403,8 @@ function sign_csr_form($my_values = array('csr_name' => '::zz::'))
 
   function sign_csr($passPhrase, $my_csrfile, $my_days, $my_device_type)
   {
-    $namearr = explode(":",$my_csrfile);
+    $mycsrfilename = $my_csrfile;
+    $namearr = explode(":",$mycsrfilename);
     $mydom = $namearr[0];
     //replace generic openssl.conf with domain specific
     $_SESSION['config']['config'] = $_SESSION['config']['config_dir'] . $mydom . "-openssl.conf";
@@ -414,26 +414,6 @@ function sign_csr_form($my_values = array('csr_name' => '::zz::'))
     $name = base64_encode(substr($my_csrfile, 0, strrpos($my_csrfile, '.')));
     $ext = substr($my_csrfile, strrpos($my_csrfile, '.'));
     $my_base64_csrfile = $name . $ext;
-  ?>
-    <h1>Signing certificate request</h1>
-
-    <p>
-    <div id="status_banner"></div>
-    <script>
-      write_to_banner("status_banner", "We will sign the requested CSR with this CA's key.");
-    </script>
-     
-    </p>
-
-    <p>
-      Now signing certificate... Please wait...
-    </p>
-  
-    
-    <script>
-      write_to_banner("status_banner", "Loading CA Key...");
-    </script>
-    <?PHP
     $fp = fopen($config['cakey'], "r") or die('Fatal: Error opening CA Key' . $config['cakey']);
     $my_key = fread($fp, filesize($config['cakey'])) or die('Fatal: Error reading CA Key' . $config['cakey']);
     fclose($fp) or die('Fatal: Error closing CA Key' . $config['cakey']);
@@ -453,7 +433,9 @@ function sign_csr_form($my_values = array('csr_name' => '::zz::'))
       $my_ca_cert = NULL;
 
     print "<b>Loading CSR from file...</b><br/>";
+    
     $fp = fopen($config['req_path'] . $my_base64_csrfile, "r") or die('Fatal: Error opening CSR file' . $my_base64_csrfile);
+    
     $my_csr = fread($fp, filesize($config['req_path'] . $my_base64_csrfile)) or die('Fatal: Error reading CSR file' . $my_base64_csrfile);
     fclose($fp) or die('Fatal: Error closing CSR file ' . $my_base64_csrfile);
     print "Done<br/><br/>\n";
@@ -512,25 +494,9 @@ function sign_csr_form($my_values = array('csr_name' => '::zz::'))
       print "Done";
       print "<br><br>";
       print "<b>Download Certificate:</b>\n<br>\n<br>\n";
-
-    ?>
-      <form action="index.php" method="post">
-        <input type="hidden" name="menuoption" value="download_cert">
-        <input type="hidden" name="cert_name" value="<?PHP if ($my_device_type == 'ca_cert') print 'zzTHISzzCAzz';
-                                                      else print $my_csrfile; ?>">
-        <input type="submit" value="Download Signed Certificate">
-      </form>
-      <BR>
-      <form action="index.php" method="post">
-        <input type="hidden" name="menuoption" value="download_cert">
-        <input type="hidden" name="cert_name" value="<?PHP print 'zzTHISzzCAzz'; ?>">
-        <input type="submit" value="Download CA Trusted Root Certificate">
-      </form>
-      <BR><BR>
-      <?PHP
-      print "<b>Your certificate:</b>\n<pre>$my_x509_scert</pre>\n";
-      ?>
-      <h1>Successfully signed certificate request with CA key.</h1>
+    include("./forms/sign_csr.php");
+  ?>
+    
   <?PHP
 
       if ($my_device_type == 'subca_cert') {

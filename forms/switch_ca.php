@@ -1,6 +1,6 @@
 <div class="container-fluid">
-    <fieldset>
-        <legend><b>Switch to a different CA<br \></legend>
+    <fieldset class="bg-light">
+        <legend class="bg-info fg-white form-head"><b>Switch to a different CA<br \></legend>
         If you wish to create a new Sub-CA please select create CSR and select device type as Sub_CA.
 
         <form action="index.php" method="post" class="formDiv">
@@ -16,10 +16,11 @@
                             while (($file = readdir($dh)) !== false) {
                                 //	if (substr($file, -4) == ".csr") {
                                 if (is_dir($config['certstore_path'] . $file) && ($file != '.') && ($file != '..')) {
-                                    print "<option>$file</option>";
+                                    print "<option value='" .$file . "'>$file</option>";
                                 }
                             }
                             ?>
+                            <option value="disco-all">Disconnect from All CAs</option>
                         </select>
                     </td>
                 </tr>
