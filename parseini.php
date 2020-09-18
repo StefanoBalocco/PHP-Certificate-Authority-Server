@@ -1,4 +1,8 @@
 <?PHP
+//this is a test file for parsing the openssl.conf
+//this code has been included in the ssl-functions
+//ML
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
