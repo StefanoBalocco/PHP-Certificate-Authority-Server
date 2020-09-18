@@ -5,6 +5,6 @@
     b) Registration Authority can signing
 4) create PKI certificates
 
-
+5) final version will not include local versions of bootstrap
 
 Possibly sort out the framework for RADIUS Authentication, but not worried about it at the moment
