@@ -1,5 +1,5 @@
 This software is Open Source/ Freeware.
-Originally written by myself Cuediin and cleanup assistance from JonTheNiceGuy
+Originally written by Cuediin and cleanup assistance from JonTheNiceGuy
 
 I am updating code for php7, bootstrap, and font awesome.
 Removed droppy and opted for jqueryui from CDN to keep updated
