@@ -4,7 +4,9 @@ function show_summary() {
 $config=$_SESSION['config'];
 flush();
 $status_array = array();
+
 $dh = opendir($config['req_path']) or die('Unable to open  requests path '.$config['req_path']);
+
 while (($file = readdir($dh)) !== false) {
   if ( ($file !== ".htaccess") && is_file($config['req_path'].$file) )  {
 	$filename = base64_decode(substr($file, 0,strrpos($file,'.')));
@@ -24,21 +26,64 @@ while (($file = readdir($dh)) !== false) {
 closedir($dh);
 
 $dh = opendir($config['cert_path']) or die('Unable to open ' . $config['cert_path']);
+$i = 0;
 while (($file = readdir($dh)) !== false) {
-  if ( ($file !== ".htaccess") && is_file($config['cert_path'].$file) )  {
-	$filename = base64_decode(substr($file, 0,strrpos($file,'.')));
-	$ext = substr($file, strrpos($file,'.'));
-	if (preg_match("((.*):(.*):(.*):(.*):(.*):(.*):(.*))",$filename,$matches)==1)
-      $this_dn=array("cn"=>trim($matches[1]),"emailAddress"=>trim($matches[2]),"ou"=>trim($matches[3]),"o"=>trim($matches[4]),"l"=>trim($matches[5]),"st"=>trim($matches[6]),"c"=>trim($matches[7]));
-    else if (preg_match("((.*):(.*):(.*):(.*):(.*):(.*))",$filename,$matches)==1)
-      $this_dn=array("cn"=>trim($matches[1]),"ou"=>trim($matches[2]),"o"=>trim($matches[3]),"l"=>trim($matches[4]),"st"=>trim($matches[5]),"c"=>trim($matches[6]));
-	if (!isset($status_array[$this_dn['cn']]))
-	  $status_array[$this_dn['cn']]=array('dn'=>$this_dn,'has_csr'=>FALSE,'has_cert'=>FALSE,'has_pkcs12'=>FALSE,'has_pkey'=>FALSE,'status'=>FALSE);	
-	if ($ext==".pem") {$status_array[$this_dn['cn']]['has_cert']=TRUE; $status_array[$this_dn['cn']]['cert_filename']=$file;}
-	if ($ext==".p12") {$status_array[$this_dn['cn']]['has_pkcs12']=TRUE; $status_array[$this_dn['cn']]['pk12_filename']=$file;}
-	$status_array[$this_dn['cn']]['unique']=$filename;
-	}
+    if ( ($file !== ".htaccess") && is_file($config['cert_path'].$file) )  {
+        $filename = base64_decode(substr($file, 0,strrpos($file,'.')));
+        $ext = substr($file, strrpos($file,'.'));
+          if (preg_match("((.*):(.*):(.*):(.*):(.*):(.*):(.*))",$filename,$matches)==1){
+            $this_dn=array("cn"=>trim($matches[1]),"emailAddress"=>trim($matches[2]),"ou"=>trim($matches[3]),"o"=>trim($matches[4]),"l"=>trim($matches[5]),"st"=>trim($matches[6]),"c"=>trim($matches[7]));
+          } elseif(preg_match("((.*):(.*):(.*):(.*):(.*):(.*))",$filename,$matches)==1) {
+            $this_dn=array("cn"=>trim($matches[1]),"ou"=>trim($matches[2]),"o"=>trim($matches[3]),"l"=>trim($matches[4]),"st"=>trim($matches[5]),"c"=>trim($matches[6]));
+          } 
+            
+          if (!isset($status_array[$this_dn['cn']])){
+            $status_array[$this_dn['cn']]=array('dn'=>$this_dn,'has_csr'=>FALSE,'has_cert'=>FALSE,'has_pkcs12'=>FALSE,'has_pkey'=>FALSE,'status'=>FALSE);
+          }
+            
+          if ($ext==".pem") {
+            $status_array[$this_dn['cn']]['has_cert']=TRUE; $status_array[$this_dn['cn']]['cert_filename']=$file;
+          }
+          if ($ext==".p12") {
+            $status_array[$this_dn['cn']]['has_pkcs12']=TRUE; $status_array[$this_dn['cn']]['pk12_filename']=$file;
+          }
+        $status_array[$this_dn['cn']]['unique']=$filename;
+        $i++;
+      }
+}
+  //if i==0 then this is probably a root cert so we'll check the root for a cert
+  //otherwise we erroneously report no certificate for this request
+  if($i==0){
+    $alt_certpath = str_replace("certs/", "", $config['cert_path']);
+    $dh = opendir($alt_certpath) or die('Unable to open ' . $alt_certpath);
+    
+    while (($file = readdir($dh)) !== false) {
+      if ( ($file !== ".htaccess") && is_file($alt_certpath.$file) )  {
+          $filename = base64_decode(substr($file, 0,strrpos($file,'.')));
+          $ext = substr($file, strrpos($file,'.'));
+            if (preg_match("((.*):(.*):(.*):(.*):(.*):(.*):(.*))",$filename,$matches)==1){
+              $this_dn=array("cn"=>trim($matches[1]),"emailAddress"=>trim($matches[2]),"ou"=>trim($matches[3]),"o"=>trim($matches[4]),"l"=>trim($matches[5]),"st"=>trim($matches[6]),"c"=>trim($matches[7]));
+            } elseif(preg_match("((.*):(.*):(.*):(.*):(.*):(.*))",$filename,$matches)==1) {
+              $this_dn=array("cn"=>trim($matches[1]),"ou"=>trim($matches[2]),"o"=>trim($matches[3]),"l"=>trim($matches[4]),"st"=>trim($matches[5]),"c"=>trim($matches[6]));
+            } 
+              
+            if (!isset($status_array[$this_dn['cn']])){
+              $status_array[$this_dn['cn']]=array('dn'=>$this_dn,'has_csr'=>FALSE,'has_cert'=>FALSE,'has_pkcs12'=>FALSE,'has_pkey'=>FALSE,'status'=>FALSE);
+            }
+              
+            if ($ext==".pem") {
+              $status_array[$this_dn['cn']]['has_cert']=TRUE; $status_array[$this_dn['cn']]['cert_filename']=$file;
+            }
+            if ($ext==".p12") {
+              $status_array[$this_dn['cn']]['has_pkcs12']=TRUE; $status_array[$this_dn['cn']]['pk12_filename']=$file;
+            }
+          $status_array[$this_dn['cn']]['unique']=$filename;
+          $i++;
+        }
+    }
   }
+
+
 closedir($dh);
 
 $dh = opendir($config['key_path']) or die('Unable to open ' . $config['key_path']);
@@ -245,7 +290,11 @@ foreach ($status_array as $filename=>$this_array) {
     $this_menu = "::::::".$table_array['status']['menu'].":::".$table_array['csr']['menu'].":::".$table_array['cert']['menu'].":::".$table_array['pkcs12']['menu'].":::".$table_array['pkey']['menu'].":::";
   
   print "<TR class=\"all_menu_class\" id=\"".$this_array['unique']."\"\n";
-  print " data-serial_no=\"".$this_array['dn']['serial_number']."\"";
+  
+  if(isset($this_array['dn']['serial_number'])){
+    print " data-serial_no=\"".$this_array['dn']['serial_number']."\"";
+  }
+ 
   print " data-has_csr=\"".$this_array['has_csr_string']."\"";
   print " data-has_cert=\"".$this_array['has_cert_string']."\"";
   print " data-has_pkcs12=\"".$this_array['has_pkcs12_string']."\"";
@@ -273,5 +322,3 @@ print "<div class=\"view_cert\">\n";
 print "</div>\n";
 print "</div>\n";
 }
-
-?>

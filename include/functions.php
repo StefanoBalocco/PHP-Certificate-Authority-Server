@@ -20,11 +20,11 @@ function p($payload,$type=""){
       print("<textarea cols=100 rows=20>");
       print($payload);
       print("</textarea><br>");
-    } else {
-      print("<pre>");
-      print($payload);
-      print("</pre>");
-    }
+    }// else {
+    //   print("<pre>");
+    //   print($payload);
+    //   print("</pre>");
+    // }
     
   }
 
