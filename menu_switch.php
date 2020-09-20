@@ -70,6 +70,7 @@ switch ($menuoption) {
 
     case "download_csr_form":
         printHeader('Download CSR');
+        printMenu($disable_menu);
         download_csr_form($config);
         printFooter();
     break;
@@ -118,7 +119,8 @@ switch ($menuoption) {
 
     case "view_csr_details_form":
         printHeader('View CSR Details');
-        view_csr_details_form();
+        printMenu($disable_menu);
+        view_csr_details_form($config);
         printFooter();
     break;
 
@@ -205,7 +207,7 @@ switch ($menuoption) {
     case "import_CSR_form":
         printHeader('Import a CSR');
         printMenu($disable_menu);
-        import_csr_form();
+        import_csr_form($config);
         printFooter();
     break;
 
@@ -219,7 +221,7 @@ switch ($menuoption) {
     case "upload_CSR_form":
         printHeader('Upload a CSR');
         printMenu($disable_menu);
-        upload_csr_form();
+        upload_csr_form($config);
         printFooter();
     break;
 

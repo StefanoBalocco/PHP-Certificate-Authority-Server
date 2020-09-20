@@ -38,25 +38,9 @@ include("./forms/download_csr.php");
 // ==================================================================================================================
 
 
-function import_CSR_form()
+function import_CSR_form($config)
 {
-  $config = $_SESSION['config'];
-?>
-  <p>
-    <b>Import a CSR</b><br />
-    <form action="index.php" method="post">
-      <input type="hidden" name="menuoption" value="import_CSR" />
-      <table style="width: 90%;">
-        <tr>
-          <td colspan=2>Request:<br />
-            <textarea name="request" cols="60" rows="6"></textarea><br />
-        <tr>
-          <td>
-          <td><input type="submit" value="Import CSR" />
-      </table>
-    </form>
-  </p>
-<?PHP
+include("./forms/import_csr.php");
 }
 
 
@@ -94,25 +78,7 @@ function import_csr($my_csr)
 
 function upload_CSR_form()
 {
-  $config = $_SESSION['config'];
-?>
-  <p>
-    <b>Upload a CSR</b><br />
-    <form enctype="multipart/form-data" action="index.php" method="POST">
-      <input type="hidden" name="menuoption" value="upload_CSR" />
-      <input type="hidden" name="MAX_FILE_SIZE" value="100000" />
-      <table style="width: 90%;">
-        <tr>
-          <th>Choose a CSR to upload: </th>
-        </tr>
-        <tr>
-          <td><input name="uploadedfile" type="file" id="uploaded_csr" />
-        <tr>
-          <td><input type="submit" value="Upload CSR" />
-      </table>
-    </form>
-  </p>
-<?PHP
+ include("./forms/upload_csr.php");
 }
 
 
@@ -177,67 +143,9 @@ function upload_csr($uploaded_file)
 // ==================================================================================================================
 
 
-function view_csr_details_form()
-{
-  $config = $_SESSION['config'];
-
-?>
-    <fieldset>
-      <legend><b>View a CSR's details</b></legend>
-      <?php
-    //View an existing CSR code form. Uses some PHP code first to ensure there are some valid CSRs available.
-    $valid_files = 0;
-    $dh = opendir($config['req_path']) or die('Unable to open  requests path');
-    while (($file = readdir($dh)) !== false) {
-
-      if (($file !== ".htaccess") && is_file($config['req_path'] . $file)) {
-        if (!is_file($config['cert_path'] . $file)) {
-          $valid_files++;
-        }
-      }
-    }
-    closedir($dh);
-
-    if ($valid_files) {
-
-    ?>
-      <form action="index.php" method="post">
-
-        <input type="hidden" name="menuoption" value="view_csr_details" />
-        <table>
-          <tr>
-            <td>Name:
-            <td><select name="csr_name" rows="6">
-                <option value="">--- Select a CSR
-                  <?php
-
-                  $dh = opendir($config['req_path']) or die('Unable to open  requests path');
-
-                  while (($file = readdir($dh)) !== false) {
-                    if (($file !== ".htaccess") && is_file($config['req_path'] . $file)) {
-                      if (!is_file($config['cert_path'] . $file)) {
-                        $name = base64_decode(substr($file, 0, strrpos($file, '.')));
-                        $ext = substr($file, strrpos($file, '.'));
-                        print "<option value=\"$name$ext\">$name$ext</option>\n";
-                      }
-                    }
-                  }
-                  closedir($dh);
-                  ?>
-              </select></td>
-          </tr>
-          <tr>
-            <td>
-            <td><input type="submit" value="View CSR">
-        </table>
-      </form>
-    <?php
-    } else
-      print "<b> No Valid CSRs are available to view.</b>\n";
-    ?>
-    </fieldset>
-
-<?PHP
+function view_csr_details_form($config)
+{  
+  include("./forms/view_csr.php");
 }
 
 
