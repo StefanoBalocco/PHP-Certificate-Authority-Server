@@ -315,8 +315,8 @@ function sign_csr_form($my_values = array('csr_name' => '::zz::'))
   
   $config = $_SESSION['config'];
 ?>
-  <fieldset>
-    <legend><b>Sign a CSR - Generate a Certificate</b></legend>
+  <fieldset class="bg-light">
+    <legend class="bg-info fg-white form-head"><b>Sign a CSR - Generate a Certificate</b></legend>
     <?php
     //Sign an existing CSR code form. Uses some PHP code first to ensure there are some valid CSRs available.
     $valid_files = 0;
