@@ -9,7 +9,7 @@ if(isset($_GET["menuoption"])){
     $disable_menu = false;
     $my_title = $_SESSION['my_ca'];
 } elseif(isset($_POST["menuoption"])){
-    if(strpos($_SESSION['config']['ca_path'], "zzCREATEZZnewZZ") > 1){
+    if(strpos($_SESSION['config']['ca_path'], "zzCREATEZZnewZZ") > 1 || isset($_POST['ca_name']) && $_POST['ca_name']=="zzCREATEZZnewZZ"){
         //we want to create a new ca so load the create_ca_form
         $menuoption = "create_ca_form";
         $my_title = "Create New CA";
