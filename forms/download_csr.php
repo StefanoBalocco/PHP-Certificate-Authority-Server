@@ -19,16 +19,9 @@
                   <option value="cer">Rename to cer</option>
                   <option value="csr">Rename to csr</option>
                 </select>
-                
+
               </td>
             </tr>
-            <?PHP
-            /*
-
-<input type="radio" name="cer_ext" value="FALSE" checked /> No <input type="radio" name="cer_ext" value="CER" /> Yes</td></tr>
-<tr><th>Rename Extension to .pfx</th><td><input type="radio" name="pfx_ext" value="FALSE" checked /> No <input type="radio" name="cer_ext" value="PFX" /> Yes</td></tr>
-*/
-            ?>
             <tr>
               <th>Name </th>
               <td><select name="csr_name" rows="6" class="form-control">

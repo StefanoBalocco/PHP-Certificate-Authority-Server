@@ -246,4 +246,54 @@ function create_ca($my_certstore_path, $my_device_type, $my_cert_dn, $my_passphr
     sign_csr($my_passphrase, $my_csrfile, $my_days, $my_device_type);
     //to do, check sign_csr code for device type
   }
+
+
+
+function printFormatedBox($heading="", $formatedtext=""){
+
+  $code = "<div class=\"container-fluid\">\n";
+  $code .= "\t<div class=\"row\">\n";
+  $code .= "\t\t<fieldset class=\"bg-light\">\n";
+  $code .= "\t\t\t<legend class=\"bg-info fg-white form-head\">";
+  $code .= $heading;
+  $code .= "</legend>\n";
+  $code .= "\t\t\t" . $formatedtext . "\n";
+  $code .= "\t\t</fieldset>\n";
+  $code .= "\t</div>\n";
+  $code .= "</div>\n";
+  return $code;
+}
+
+
+
+  function import_csr($my_csr)
+{
+  $config = $_SESSION['config'];
+
+  //CN:Email:OU:O:L:ST:GB 
+  $cert_dn = openssl_csr_get_subject($my_csr);
+  $my_csrfile = "";
+  foreach($config['blank_dn'] as $key => $val) {
+    if (isset($cert_dn[$key]))
+      $my_csrfile = $my_csrfile . $cert_dn[$key] . ":";
+    else
+      $my_csrfile = $my_csrfile . ":";
+  }
+  
+  
+  $text = p2($cert_dn, 'a');
+  $my_csrfile = substr($my_csrfile, 0, strrpos($my_csrfile, ':'));
+  $my_csrfile = $config['req_path'] . base64_encode($my_csrfile) . ".pem";
+  $text.= "<b>Saving your CSR...</b><br/>";
+  if ($fp = fopen($my_csrfile, 'w') or die('Fatal: Error open write $my_csrfile')) {
+    fputs($fp, $my_csr)  or die('Fatal: Error writing to $my_csrfile');
+    fclose($fp)  or die('Fatal: Error closing write $my_csrfile');
+  }
+  //removing the path from the file name as we should not be exposing that
+  $text .= "CSR Filename:" . str_replace($_SESSION['config']['req_path'],"", $my_csrfile);
+  $text .= "<br><b>Done</b>";
+  
+  print(printFormatedBox("CSR Upload Processed", $text));
+
+}
 ?>

@@ -27,16 +27,23 @@ include("./include/functions_misc.php");
 
 $_SESSION['cwd'] = dirname(__FILE__);
 $page_variables=array();
+
 if (count($_POST) or count($_GET)) {
   $page_variables = array_merge($_POST,$_GET);
   }
   
-if (!isset($page_variables['menuoption']))
-    $page_variables['menuoption'] = FALSE;
-if (!isset($page_variables['ca_name']))
-    $page_variables['ca_name'] = FALSE;
-if (!isset($page_variables['print_content_only']))
-    $page_variables['print_content_only'] = FALSE;
+if (!isset($page_variables['menuoption'])){
+  $page_variables['menuoption'] = FALSE;
+}
+    
+if (!isset($page_variables['ca_name'])){
+  $page_variables['ca_name'] = FALSE;
+}
+    
+if (!isset($page_variables['print_content_only'])){
+  $page_variables['print_content_only'] = FALSE;
+}
+    
 
 // Various IF statements to check current status of the PHP CA
 //Initial page when nothing is defined and we need to create the certificate store
@@ -46,14 +53,15 @@ if (strtoupper(get_KeyValue($config, 'certstore_path')) == 'NOT_DEFINED' && get_
   }
 elseif (get_KeyValue($page_variables, 'menuoption') =='switchca' && get_KeyValue($page_variables, 'ca_name') !== FALSE) {
   // Checks for creating a CA
-  if ($page_variables['ca_name'] == 'zzCREATEZZnewZZ')
-    $menuoption='create_ca_form';
-  else {
-    // If not creating a CA set current CA to requested CA
-    $menuoption = 'switchca';
-    $_SESSION['my_ca'] = $page_variables['ca_name'];
-	$config=update_config();
-    }
+    if ($page_variables['ca_name'] == 'zzCREATEZZnewZZ'){
+       
+        $menuoption='create_ca_form';
+      } else {
+      // If not creating a CA set current CA to requested CA
+        $menuoption = 'switchca';
+        $_SESSION['my_ca'] = $page_variables['ca_name'];
+        $config=update_config();
+      }
   }
 elseif ((get_KeyValue($page_variables, 'menuoption') === FALSE && !isset($_SESSION['my_ca'])) || 
         (!isset($_SESSION['my_ca']) && get_KeyValue($page_variables, 'menuoption') != 'setup_certstore' 

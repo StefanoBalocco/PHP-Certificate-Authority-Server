@@ -27,7 +27,26 @@ function p($payload,$type=""){
     // }
     
   }
-
+  function p2($payload,$type="a"){
+  
+    if($type=="a"){
+      $code = "<pre>";
+      foreach($payload as $key => $val){
+        $code .= $key . "=" . $val . "\n";
+      }
+      $code .= "</pre>";
+      return $code;
+    } 
+    if($type=="c"){
+      $code = "<textarea cols=100 rows=20>";
+      foreach($payload as $key => $val){
+        $code .= $key . "=" . $val . "\n";
+      }
+      $code .= "</textarea><br>";
+      return $code;
+    }
+    
+  }
   function printHeader($my_title='PHP CA Server',$SHOW_CA_NAME=FALSE) {
     include("./include/header.php");
     

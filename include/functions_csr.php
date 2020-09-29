@@ -44,30 +44,7 @@ include("./forms/import_csr.php");
 }
 
 
-function import_csr($my_csr)
-{
-  $config = $_SESSION['config'];
 
-  //CN:Email:OU:O:L:ST:GB 
-  $cert_dn = openssl_csr_get_subject($my_csr);
-  $my_csrfile = "";
-  foreach($config['blank_dn'] as $key => $val) {
-    if (isset($cert_dn[$key]))
-      $my_csrfile = $my_csrfile . $cert_dn[$key] . ":";
-    else
-      $my_csrfile = $my_csrfile . ":";
-  }
-  print_r($cert_dn);
-  $my_csrfile = substr($my_csrfile, 0, strrpos($my_csrfile, ':'));
-  $my_csrfile = $config['req_path'] . base64_encode($my_csrfile) . ".pem";
-  print "<b>Saving your CSR...</b><br/>";
-  if ($fp = fopen($my_csrfile, 'w') or die('Fatal: Error open write $my_csrfile')) {
-    fputs($fp, $my_csr)  or die('Fatal: Error writing to $my_csrfile');
-    fclose($fp)  or die('Fatal: Error closing write $my_csrfile');
-  }
-  print "CSR Filename:" . $my_csrfile;
-  print "<b>Done";
-}
 
 
 // ==================================================================================================================
@@ -155,61 +132,17 @@ function view_csr($my_csrfile)
   $name = base64_encode(substr($my_csrfile, 0, strrpos($my_csrfile, '.')));
   $ext = substr($my_csrfile, strrpos($my_csrfile, '.'));
   $my_base64_csrfile = $name . $ext;
-?>
-  <h1>Viewing certificate request</h1>
-  <input type='button' class='button' style='margin-left: 100px;' onclick="window.location='index.php?menuoption=view_csr_details_form'" value="Back"><br>
-  <?php
-  print "<b>Loading CSR from file...</b><br/>";
-  $fp = fopen($config['req_path'] . $my_base64_csrfile, "r") or die('Fatal: Error opening CSR file ' . $my_base64_csrfile);
-  $my_csr = fread($fp, filesize($config['req_path'] . $my_base64_csrfile)) or die('Fatal: Error reading CSR file ' . $my_base64_csrfile);
-  fclose($fp) or die('Fatal: Error closing CSR file ' . $my_base64_csrfile);
-  print "Done<br/><br/>\n";
-  //removing html formatting
-  print("<pre>");
-  print $my_csr;
-  print("</pre>");
-  print "<BR><BR><BR>\n\n\n";
-  $my_details = openssl_csr_get_subject($my_csr);
-  $my_public_key_details = openssl_pkey_get_details(openssl_csr_get_public_key($my_csr));
-  ?>
-  <table style='border:1px solid #000000; padding: 10px' class='boxbg'>
-    <tr>
-      <th class='formtitles'>Common Name (eg www.golf.local)</th>
-      <td><?PHP print $my_details['CN']; ?></td>
-    </tr>
-    <tr>
-      <th class='formtitles'>Contact Email Address</th>
-      <td><?PHP print $my_details['emailAddress']; ?></td>
-    </tr>
-    <tr>
-      <th class='formtitles'>Organizational Unit Name</th>
-      <td><?PHP print $my_details['OU']; ?></td>
-    </tr>
-    <tr>
-      <th class='formtitles'>Organization Name</th>
-      <td><?PHP print $my_details['O']; ?></td>
-    </tr>
-    <tr>
-      <th class='formtitles'>City</th>
-      <td><?PHP print $my_details['L']; ?></td>
-    </tr>
-    <tr>
-      <th class='formtitles'>State</th>
-      <td><?PHP print $my_details['ST']; ?></td>
-    </tr>
-    <tr>
-      <th class='formtitles'>Country</th>
-      <td><?PHP print $my_details['C']; ?></td>
-    </tr>
-    <tr>
-      <th class='formtitles'>Key Size</th>
-      <td><?PHP print $my_public_key_details['bits']; ?></td>
-    </tr>
-  </table>
-  <br>
-  <input type='button' class='button' style='margin-left: 100px;' onclick="window.location='index.php?menuoption=view_csr_details_form'" value="Back">
-<?PHP
+  
 
+            if(isset($_POST['form-action'])){
+         
+                $return_url="index.php?menuoption=delete_csr_form";
+                $form_title="Reject/Delete this CSR";
+            } else {
+              $form_title="Viewing certificate request";
+              $return_url="index.php?menuoption=view_csr_details_form";
+            }
+  include("./forms/view_csr_details.php");
 }
 
 
@@ -218,96 +151,15 @@ function view_csr($my_csrfile)
 // ==================================================================================================================
 
 
-function sign_csr_form($my_values = array('csr_name' => '::zz::'))
+function sign_csr_form($config,$my_values = array('csr_name' => '::zz::'))
 {
-  
-  $config = $_SESSION['config'];
-?>
-  <fieldset class="bg-light">
-    <legend class="bg-info fg-white form-head"><b>Sign a CSR - Generate a Certificate</b></legend>
-    <?php
-    //Sign an existing CSR code form. Uses some PHP code first to ensure there are some valid CSRs available.
-    $valid_files = 0;
-    $dh = opendir($config['req_path']) or die('Unable to open  requests path');
-    // echo $config['cert_path'];
-    while (($file = readdir($dh)) !== false) {
-      if (($file !== ".htaccess") && is_file($config['req_path'] . $file)) {
-        $name = base64_decode(substr($file, 0, strrpos($file, '.')));
-        $ext = substr($file, strrpos($file, '.'));
-        if (!is_file($config['cert_path'] . $file) or ($my_values['csr_name'] == "$name$ext")) {
-          $valid_files++;
-        }
-      }
-    }
-    closedir($dh);
+  include("./forms/sign_csr_form.php");
+}
 
-    if ($valid_files) {
-    ?>
-      <form action="index.php" method="post">
-        <input type="hidden" name="menuoption" value="sign_csr" />
-        <table>
-          <tr>
-            <th class='formtitles'>CA Passphrase:</th>
-            <td><input type="password" name="pass" /></td>
-          <tr>
-            <th class='formtitles'>Expiration:</th>
-            <td><input type="text" name="days" value="730" />
-              <small style='color:red; font-style:italic;'>Number of days Certificate is to be valid for:</small></td>
+function reject_csr_form($config){
+  include("./forms/delete_csr_form.php");
+}
 
-          <tr>
-            <th class='formtitles'>Certificate Type:</th>
-            
-            <td><select name="device_type">
-              <option value="client_cert">Client</option>
-              <option value="server_cert" selected="selected">Server</option>
-              <option value="msdc_cert">Microsoft Domain Controller</option>
-              <option value="subca_cert">Sub_CA</option>
-              <option value="8021x_client_cert">802.1x Client</option>
-              <option value="8021x_server_cert">802.1x Server</option>
-            </select></td>
-          </tr>
-          <tr>
-            <th class='formtitles'>CSR Name:</th>
-            <td><select name="csr_name" rows="6">
-                <option value="">--- Select a CSR ---</option>
-                <?php
-
-                $dh = opendir($config['req_path']) or die('Unable to open  requests path');
-                while (($file = readdir($dh)) !== false) {
-                  if (($file !== ".htaccess") && is_file($config['req_path'] . $file)) {
-                    $name = base64_decode(substr($file, 0, strrpos($file, '.')));
-                    $ext = substr($file, strrpos($file, '.'));
-                    if (!is_file($config['cert_path'] . $file) or ($my_values['csr_name'] == "$name$ext")) {
-                      if ($my_values['csr_name'] == "$name$ext") $this_selected = " selected=\"selected\"";
-                      else $this_selected = "";
-                      print "<option value=\"$name$ext\"" . $this_selected . ">$name $ext</option>\n";
-                    }
-                  }
-                }
-                closedir($dh);
-                ?>
-              </select></td>
-          </tr>
-          <tr>
-            <td>&nbsp;</td>
-            <td class="formtitles"><input class="button" type="submit" value="Sign CSR"></td>
-        </table>
-      </form>
-      <p>
-        <br>
-
-      <?php
-    } else
-      print "<b> No Valid CSRs are available to sign.</b>\n";
-      ?>
-      </p>
-      </fieldset>
-    <?PHP
-  }
-    ?>
-  
-
-  <?PHP
 
   function sign_csr($passPhrase, $my_csrfile, $my_days, $my_device_type)
   {
@@ -356,6 +208,7 @@ function sign_csr_form($my_values = array('csr_name' => '::zz::'))
 
     print "<b>Signing CSR...</b><br/>";
     $my_serial = sprintf("%04d", get_serial());    
+ 
     $my_scert = openssl_csr_sign($my_csr, $my_ca_cert, $my_ca_privkey, $my_days, $config, $my_serial) or die('Fatal: Error signing CSR.');
     print "Done<br/><br/>\n";
 
@@ -402,6 +255,8 @@ function sign_csr_form($my_values = array('csr_name' => '::zz::'))
       print "Done";
       print "<br><br>";
       print "<b>Download Certificate:</b>\n<br>\n<br>\n";
+
+
     include("./forms/sign_csr.php");
   ?>
     

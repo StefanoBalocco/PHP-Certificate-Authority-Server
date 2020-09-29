@@ -9,9 +9,17 @@ if(isset($_GET["menuoption"])){
     $disable_menu = false;
     $my_title = $_SESSION['my_ca'];
 } elseif(isset($_POST["menuoption"])){
-    $menuoption = $_POST["menuoption"];
+    if(strpos($_SESSION['config']['ca_path'], "zzCREATEZZnewZZ") > 1){
+        //we want to create a new ca so load the create_ca_form
+        $menuoption = "create_ca_form";
+        $my_title = "Create New CA";
+    } else {
+        $menuoption = $_POST["menuoption"];
+        $my_title = $_SESSION['my_ca'];
+    }
+    
     $disable_menu = false;
-    $my_title = $_SESSION['my_ca'];
+    
 } else {
     if(!isset($_SESSION) ){
         //if session is not set we show the switch CA
@@ -22,6 +30,10 @@ if(isset($_GET["menuoption"])){
             $menuoption = "switchca_form";
             $my_title = "NO CA Selected";
             $disable_menu = true;
+        } elseif(strpos($_SESSION['config']['ca_path'], "zzCREATEZZnewZZ") > 1){
+            $menuoption = "create_ca_form";
+            $disable_menu = "false";
+            $my_title = "Create New CA";
         } else {
             //assume session is set and therefore we'll show the summary
             $menuoption = "show_summary";
@@ -30,6 +42,7 @@ if(isset($_GET["menuoption"])){
         } 
     }
 }
+
 
 
 switch ($menuoption) {
@@ -240,10 +253,17 @@ switch ($menuoption) {
 		if (isset($page_variables['csr_name']))
           sign_csr_form(array('csr_name'=>$page_variables['csr_name']));
 		else
-          sign_csr_form();
+          sign_csr_form($config);
         if ($page_variables['print_content_only']== FALSE) printFooter();
     break;
 
+    case "delete_csr_form":
+        printHeader("Reject CSR");
+        printMenu($disable_menu);
+        reject_csr_form($config);
+        printFooter();
+    break;
+    
     case "sign_csr":
         printHeader('Signing CSR');
         printMenu($disable_menu);

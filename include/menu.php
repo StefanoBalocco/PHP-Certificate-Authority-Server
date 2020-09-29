@@ -12,6 +12,7 @@
                         <li><a href="index.php?menuoption=download_csr_form" class="dropdown-item"><i class="fas fa-download" style="color:cornflowerblue !important"></i> Download a CSR</a></li>
                         <li><a href="index.php?menuoption=view_csr_details_form" class="dropdown-item"><i class="fas fa-glasses" style="color:blue !important"></i> View a CSR's Details</a></li>
                         <li><a href="index.php?menuoption=sign_csr_form" class="dropdown-item"><i class="fas fa-sign" style="color:olive !important"></i> Sign a CSR</a></li>
+                        <li><a href="index.php?menuoption=delete_csr_form" class="dropdown-item"><i class="fas fa-recycle" style="color:red !important"></i> Reject/Delete CSR</a></li>
                     </ul>
                 </li>
 
