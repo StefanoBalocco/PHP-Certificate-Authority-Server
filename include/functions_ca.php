@@ -4,8 +4,13 @@ function switch_ca_form()
   session_unset();
   $config = update_config();
   //check for dir before failing
-    $dh = opendir($config['certstore_path']) or die("Certstore not found-- check settings.php or your folder names");
-  // 
+  $dh = false;
+  if( is_dir( $config['certstore_path'] ) ) {
+    $dh = opendir($config['certstore_path']);
+  }
+  if( false === $dh ) {
+    die("Certstore not found-- check settings.php or your folder names");
+  }
 include("./forms/switch_ca.php");
 }
 
