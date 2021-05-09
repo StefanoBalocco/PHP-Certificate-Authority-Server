@@ -5,7 +5,6 @@ $config['certstore_path']="NOT_DEFINED";
 
 if (isset($_SESSION['config']) and isset($_SESSION['my_ca'])){
     $config['ca_path'] = $config['certstore_path'].$_SESSION['my_ca']."/";   
-    print($config['ca_path']);
 } else {
     $config['ca_path'] = $config['certstore_path'].'not_defined';
 }
