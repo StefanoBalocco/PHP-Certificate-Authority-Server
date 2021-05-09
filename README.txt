@@ -1,8 +1,20 @@
 This software is Open Source/ Freeware.
-Written by myself Cuediin and cleanup assistance from JonTheNiceGuy
+Originally written by Cuediin and cleanup assistance from JonTheNiceGuy
 
-I have used some code borrowed from droppy from the Jquery forums for a simple menu system.
+I am updating code for php7, bootstrap, and font awesome.
+Removed droppy and opted for jqueryui from CDN to keep updated
+As the previous author I am develping this on Ubuntu but I am using Ubuntu 20lts
+
 On top of this I have use some functions from various users from php.net. I will try and go through them so that I can properly acknowledge them.
+
+
+Warning many functions may be broken at this time as I go through and update code.
+
+CSR for server is validated to work for single domain and subject alternatives (SAN)
+
+
+
+//from the original author
 At this moment in time this set of scripts should be fully working.
 It is primary aimed at an Ubuntu environment. I do quite a few file work as it is designed to work with Tiny CA's file structure. I have not colloborated with them and they do not know of this product. This is my first time releasing something into the public domain, so apologies if I have not acknowledged the correct people or done the licensing thing properly.
 

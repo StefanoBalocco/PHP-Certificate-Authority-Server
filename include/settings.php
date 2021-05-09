@@ -1,24 +1,32 @@
 <?PHP
 function update_config() {
-$config['certstore_path']="NOT_DEFINED";
-if (isset($_SESSION['config']) and isset($_SESSION['my_ca']) )
-  $config['ca_path'] = $config['certstore_path'].$_SESSION['my_ca']."/";
-else
-  $config['ca_path'] = $config['certstore_path'].'not_defined';
 
-$config['req_path']=$config['ca_path'].'req/';
-$config['key_path']=$config['ca_path'].'keys/';
-$config['cert_path']=$config['ca_path'].'certs/';
-$config['crl_path']=$config['ca_path'].'crl/';
-$config['ssh_pubkey_path']=$config['ca_path'].'sshpub/';
-$config['csr_upload_path']=$config['ca_path'].'csr_upload/';
-$config['newcert_path']=$config['ca_path'].'newcerts/';
-$config['config'] = $config['ca_path']."openssl.conf";
-$config['cacert'] = $config['ca_path'] . "cacert.pem";
-$config['cakey'] = $config['ca_path'] . "cacert.key";
-$config['cacrl'] = $config['crl_path'] . "crl.pem";
-$config['index'] = $config['ca_path'] . "index.txt";
-$config['serial'] = $config['ca_path'] . "serial";
+$config['certstore_path']="NOT_DEFINED";
+
+if (isset($_SESSION['config']) and isset($_SESSION['my_ca'])){
+    $config['ca_path'] = $config['certstore_path'].$_SESSION['my_ca']."/";   
+    print($config['ca_path']);
+} else {
+    $config['ca_path'] = $config['certstore_path'].'not_defined';
+}
+  
+
+  $config['req_path']=$config['ca_path'].'req/';
+  $config['key_path']=$config['ca_path'].'keys/';
+  $config['cert_path']=$config['ca_path'].'certs/';
+  $config['crl_path']=$config['ca_path'].'crl/';
+  $config['ssh_pubkey_path']=$config['ca_path'].'sshpub/';
+  $config['csr_upload_path']=$config['ca_path'].'csr_upload/';
+  $config['newcert_path']=$config['ca_path'].'newcerts/';
+  $config['config'] = $config['ca_path']."openssl.conf";
+  $config['cacert'] = $config['ca_path'] . "cacert.pem";
+  $config['cakey'] = $config['ca_path'] . "cacert.key";
+  $config['cacrl'] = $config['crl_path'] . "crl.pem";
+  $config['index'] = $config['ca_path'] . "index.txt";
+  $config['serial'] = $config['ca_path'] . "serial";
+  $config['config_dir'] = $config['ca_path']."domconfigs/";
+
+
 $config['blank_dn']=array(
 'CN'=>"Common Name",
 'emailAddress'=>"Email Address",
@@ -59,5 +67,7 @@ array('config' => $config['config'],
 */
 return $config;
 }
+
+
 
 ?>

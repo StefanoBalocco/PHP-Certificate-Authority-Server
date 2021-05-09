@@ -1,1 +1,10 @@
+1) update code
+2) convert to bootstrap and fontawesome
+3) create user profiles for requesting and signing
+    a) Trusted agent can submit
+    b) Registration Authority can signing
+4) create PKI certificates
+
+5) final version will not include local versions of bootstrap
+
 Possibly sort out the framework for RADIUS Authentication, but not worried about it at the moment
