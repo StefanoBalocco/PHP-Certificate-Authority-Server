@@ -1,4 +1,4 @@
-<?PHP
+<?php
 //
 // The PHP file which stores all the functions referenced by index.php
 //
@@ -8,7 +8,6 @@ function setup_certstore_form()
   $this_certstore = dirname($_SESSION['cwd']) . "/certstore";
 ?>
 <div class="container-fluid">
-
  <fieldset>
     <legend>PHP-CA Configure Certificate Store</legend>
     <b>Certificate Store Location</b><br />
@@ -16,7 +15,7 @@ function setup_certstore_form()
       <input type="hidden" name="menuoption" value="setup_certstore" />
         <div class="form-group" style="width:400px">
           <label for=""></label>
-          <input type="text" class="form-control" name="certstore_path" id="" aria-describedby="helpId" value="<?PHP print $this_certstore; ?>" placeholder="">
+          <input type="text" class="form-control" name="certstore_path" id="" aria-describedby="helpId" value="<?php print $this_certstore; ?>" placeholder="">
           <small id="helpId" class="form-text text-muted">Do use a folder in the webserver path</small>
           <input type="submit" value="Submit Certificate Store" class="form-control button-green" />
         </div>
@@ -24,9 +23,7 @@ function setup_certstore_form()
     </form>
   </fieldset>
 </div>
- 
-
-<?PHP
+<?php
 }
 
 function setup_certstore($my_certstore_path)
@@ -62,7 +59,7 @@ function setup_certstore($my_certstore_path)
     <input type="submit" value="Create a Certificate Authority" />
   </form>
   </p>
-<?PHP
+<?php
 }
 
 
@@ -132,7 +129,3 @@ else
     define("INCLUDE_DIR", "/include");
 }
 */
-
-
-
-?>
