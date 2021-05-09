@@ -1,20 +1,29 @@
-<?php
-session_start();
+<?PHP
+if (session_id() === '') {
+    session_start();
+}
 
-include('./include/functions.php');
-include('./include/settings.php');
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+
+include("./include/functions.php");
+include("./include/settings.php");
 //update config
 $config = update_config();
 $_SESSION['config']=$config;
 
-include('./include/functions_setup.php');
-include('./include/ssl-functions.php');
-include('./include/functions_csr.php');
-include('./include/functions_cert.php');
-include('./include/functions_key.php');
-include('./include/functions_ca.php');
-include('./include/functions_show_summary.php');
-include('./include/functions_misc.php');
+include("./include/functions_setup.php");
+include("./include/ssl-functions.php");
+include("./include/functions_csr.php");
+include("./include/functions_cert.php");
+include("./include/functions_key.php");
+include("./include/functions_ca.php");
+include("./include/functions_show_summary.php");
+include("./include/functions_misc.php");
+
+
 
 $_SESSION['cwd'] = dirname(__FILE__);
 $page_variables=array();
@@ -90,4 +99,6 @@ if (isset($page_variables['cert_dn']['keySize'])) {
 // =================================================================================================================================================================
 
 //this will call header and footer
-include('menu_switch.php');
+include("menu_switch.php");
+
+?>
